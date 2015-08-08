@@ -11,12 +11,13 @@ io.on('connection', function(socket){
   console.log('a user connected');
 
   var id = setInterval(function() {
-    ws.send(JSON.stringify(new Date()), function() {  })
+    socket.send(JSON.stringify(new Date()), function() {  })
   }, 1000)
 
   socket.on('disconnect', function(){
     console.log('user disconnected');
   });
+
   socket.on('chat message', function(msg){
     console.log('message: ' + msg);
     io.emit('chat message', msg);
@@ -28,6 +29,6 @@ io.on('connection', function(socket){
   })
 });
 
-// http.listen(5000, function(){
-//   console.log('listening on *:5000');
-// });
+http.listen(5000, function(){
+  console.log('listening on *:5000');
+});
