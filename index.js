@@ -14,6 +14,11 @@ io.configure(function () {
 
 io.on('connection', function(socket){
   console.log('a user connected');
+
+  var id = setInterval(function() {
+    ws.send(JSON.stringify(new Date()), function() {  })
+  }, 1000)
+
   socket.on('disconnect', function(){
     console.log('user disconnected');
   });
@@ -21,8 +26,13 @@ io.on('connection', function(socket){
     console.log('message: ' + msg);
     io.emit('chat message', msg);
   });
+
+  io.on("close", function() {
+    console.log("websocket connection close")
+    clearInterval(id)
+  })
 });
 
-http.listen(3000, function(){
-  console.log('listening on *:3000');
-});
+// http.listen(3000, function(){
+//   console.log('listening on *:3000');
+// });
