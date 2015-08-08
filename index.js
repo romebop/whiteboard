@@ -22,7 +22,7 @@ io.on('connection', function(socket){
     io.emit('chat message', msg);
   });
 
-  io.on("close", function() {
+  socket.on("close", function() {
     console.log("websocket connection close")
     clearInterval(id)
   })
