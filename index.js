@@ -1,3 +1,4 @@
+/*
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
@@ -18,3 +19,19 @@ io.on('connection', function(socket){
 http.listen(3000, function(){
   console.log('listening on *:3000');
 });
+*/
+
+
+(function() {
+  var io;
+  io = require('socket.io').listen(4000);
+  io.sockets.on('connection', function(socket) {
+    socket.on('drawClick', function(data) {
+      socket.broadcast.emit('draw', {
+        x: data.x,
+        y: data.y,
+        type: data.type
+      });
+    });
+  });
+}).call(this);
