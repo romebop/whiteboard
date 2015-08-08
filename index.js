@@ -1,6 +1,7 @@
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var port = process.env.PORT || 5000
 
 app.get('/', function(req, res){
   res.sendfile('index.html');
@@ -27,6 +28,6 @@ io.on('connection', function(socket){
   })
 });
 
-http.listen(5000, function(){
-  console.log('listening on *:5000');
-});
+// http.listen(5000, function(){
+//   console.log('listening on *:5000');
+// });
