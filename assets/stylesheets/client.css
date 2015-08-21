@@ -1,0 +1,8 @@
+html, body {
+  height: 100%;
+}
+
+#whiteboard {
+  width: 600px;
+  height: 480px;
+}
