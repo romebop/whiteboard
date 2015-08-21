@@ -1,8 +1,8 @@
-html, body {
-  height: 100%;
-}
-
 #whiteboard {
-  width: 600px;
-  height: 480px;
+
+  position: absolute;
+  top: 10%;
+  left: 10%;
+
+  border: 1px solid
 }
