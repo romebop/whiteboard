@@ -1,7 +1,7 @@
 {
-  "name": "socket-quantumumesh",
+  "name": "whiteboard",
   "version": "0.0.1",
-  "description": "our first socket.io app",
+  "description": "socket.io whiteboard app",
   "dependencies": {
     "express": "^4.13.3",
     "path": "^0.11.14",
