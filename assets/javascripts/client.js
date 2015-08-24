@@ -5,9 +5,8 @@ var socket = io();
 // load global canvas
 socket.on('load', function(params) {
   canvas_dataURL = params['canvas_dataURL'];
-  var canvas_img = new Image();
-  canvas_img.src = canvas_dataURL;
-  ctx.drawImage(canvas_img, 0, 0);
+  if (canvas_dataURL == null) ctx.clearRect(0, 0, canvas.width, canvas.height);
+  else drawDataURL(canvas_dataURL);
 });
 
 // receive io emission from server
@@ -16,6 +15,16 @@ socket.on('draw', function(params) {
   var clientX = params['clientX'];
   var clientY = params['clientY'];
   findxy(type, clientX, clientY);
+});
+
+socket.on('color', function(color) {
+  x = color;
+  if (x == 'white') y = 14;
+  else y = 2;
+});
+
+socket.on('clear', function() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 });
 
 /* canvas drawing logic */
@@ -33,7 +42,7 @@ var canvas,
   x = 'black', 
   y = 2;
 
-function init() {
+function init_canvas() {
     canvas = document.getElementById('whiteboard');
     ctx = canvas.getContext('2d');
 
@@ -100,33 +109,43 @@ function draw() {
 
 function color(obj) {
     switch (obj.id) {
-        case "green":
-            x = "green";
+        case 'green':
+            socket.emit( 'color', 'green' );
             break;
-        case "blue":
-            x = "blue";
+        case 'blue':
+            socket.emit( 'color', 'blue' );
             break;
-        case "red":
-            x = "red";
+        case 'red':
+            socket.emit( 'color', 'red' );
             break;
-        case "yellow":
-            x = "yellow";
+        case 'yellow':
+            socket.emit( 'color', 'yellow' );
             break;
-        case "orange":
-            x = "orange";
+        case 'orange':
+            socket.emit( 'color', 'orange' );
             break;
-        case "black":
-            x = "black";
+        case 'black':
+            socket.emit( 'color', 'black' );
             break;
-        case "white":
-            x = "white";
+        case 'white':
+            socket.emit( 'color', 'white' );
             break;
     }
-    if (x == "white") y = 14;
-    else y = 2;
+}
+
+function clear_canvas() {
+  if (confirm("clear whiteboard?")) {
+    socket.emit( 'clear' );
+  }
 }
 
 function updateDataURL() {
   canvas_dataURL = canvas.toDataURL();
+}
+
+function drawDataURL(dataURL) {
+  var canvas_img = new Image();
+  canvas_img.src = dataURL;
+  ctx.drawImage(canvas_img, 0, 0);
 }
 

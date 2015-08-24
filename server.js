@@ -3,9 +3,8 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-var connection_id = 0;
-// dataURL representation of global canvas initialized blank
-var canvas_dataURL = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
+var connection_number = 0;
+var canvas_dataURL; // dataURL representation of global canvas
 
 app.set('port', (process.env.PORT || 3000));
 app.use(express.static(__dirname + '/assets'));
@@ -19,8 +18,8 @@ http.listen(app.get('port'), function() {
 });
 
 io.on('connection', function(socket) {
-  console.log("a connection has been made. id: " + connection_id);
-  connection_id++;
+  console.log("a connection has been made. number: " + connection_number);
+  connection_number++;
 
   // emit canvas state for client to load
   socket.emit('load', { 'canvas_dataURL': canvas_dataURL });
@@ -30,4 +29,14 @@ io.on('connection', function(socket) {
     canvas_dataURL = params['canvas_dataURL'];
     io.emit('draw', params);
   });
+
+  socket.on('color', function(color) {
+    io.emit('color', color);
+  });
+
+  socket.on('clear', function() {
+    canvas_dataURL = null;
+    io.emit('clear');
+  });
+
 });
