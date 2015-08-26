@@ -1,6 +1,7 @@
 html, body {
   height: 100%;
   margin: 0px;
+  font-family: Helvetica, Arial;
 }
 
 #container {
@@ -109,7 +110,53 @@ html, body {
   height: 499px;
   background: #fff;
 }
+/* from here */
+#chatform {
+  position: fixed;
+  background: #000; 
+  padding: 3px;
+  left: 98px; 
+  top: 559px; 
+  width: 296px; 
+}
 
+#chatform input { 
+  border: 0; 
+  padding: 10px; 
+  width: 238px; 
+  margin-right: .5%; 
+}
+
+#chatform button { 
+  width: 35px; 
+  background: #b4c5f6; 
+  border: none; 
+  padding: 10px; 
+  margin-left: -3px;
+  color: white;
+}
+
+#messages { 
+  position: absolute;
+  width: 298px;
+  height: 457px;
+  left: 0px;
+  top: 1px;
+  list-style-type: none; 
+  margin: 0; 
+  padding: 0; 
+  overflow-y: scroll;
+  background: #ecf0f1;
+}
+
+#messages li { 
+  padding: 5px 10px; 
+}
+
+#messages li:nth-child(odd) { 
+  background: #fff; 
+}
+/* to here */
 #whiteboard {
   position: absolute;
   top: 99px;

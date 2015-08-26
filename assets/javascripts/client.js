@@ -9,73 +9,88 @@ socket.on('load', function(params) {
   else drawDataURL(canvas_dataURL);
 });
 
-// receive io emission from server
+// receive io emissions from server
 socket.on('draw', function(params) {
   var type = params['type'];
   var clientX = params['clientX'];
   var clientY = params['clientY'];
-  findxy(type, clientX, clientY);
-});
-
-socket.on('color', function(color) {
-  x = color;
-  if (x == 'white') y = 14;
-  else y = 2;
+  var color = params['color'];
+  var width = params['width'];
+  findxy(type, clientX, clientY, color, width);
 });
 
 socket.on('clear', function() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  console.log("we make it to clear");
+  drawDataURL(blank_dataURL);
+  updateDataURL();
+  //ctx.clearRect(0, 0, canvas.width, canvas.height);
+});
+
+socket.on('chat message', function(msg) {
+  $('#messages').append($('<li>').text(msg));
 });
 
 /* canvas drawing logic */
 // source: http://goo.gl/xxprq8
 
+// global variables
 var canvas,
+  ctx,
   canvas_dataURL,
-  ctx, 
+  blank_dataURL, 
   flag = false, 
   prevX = 0, 
   currX = 0, 
   prevY = 0, 
   currY = 0, 
   dot_flag = false,
-  x = 'black', 
-  y = 2;
+  myColor = 'black', 
+  myWidth = 2;
 
 function init_canvas() {
     canvas = document.getElementById('whiteboard');
     ctx = canvas.getContext('2d');
+
+    ctx.beginPath();
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.closePath();
+
+    blank_dataURL = canvas.toDataURL();
 
     w = canvas.width;
     h = canvas.height;
 
     // emit client input to server
     canvas.addEventListener('mousemove', function (e) {
-        socket.emit( 'draw', { 'type': 'move', 'clientX': e.clientX, 'clientY': e.clientY, 'canvas_dataURL': canvas_dataURL } )
+        emit_mouse('move', e);
     }, false);
     canvas.addEventListener('mousedown', function (e) {
-        socket.emit( 'draw', { 'type': 'down', 'clientX': e.clientX, 'clientY': e.clientY, 'canvas_dataURL': canvas_dataURL } )
+        emit_mouse('down', e);
     }, false);
     canvas.addEventListener('mouseup', function (e) {
-        socket.emit( 'draw', { 'type': 'up', 'clientX': e.clientX, 'clientY': e.clientY, 'canvas_dataURL': canvas_dataURL } )        
+        emit_mouse('up', e);
     }, false);
     canvas.addEventListener('mouseout', function (e) {
-        socket.emit( 'draw', { 'type': 'out', 'clientX': e.clientX, 'clientY': e.clientY, 'canvas_dataURL': canvas_dataURL } )        
+        emit_mouse('out', e);
     }, false);
 }
 
-function findxy(res, clientX, clientY) {
+function emit_mouse(type, e) {
+  socket.emit( 'draw', { 'type': type, 'clientX': e.clientX, 'clientY': e.clientY, 'color': myColor, 'width': myWidth, 'canvas_dataURL': canvas_dataURL } )
+}
+
+function findxy(res, clientX, clientY, color, width) {
     if (res == 'down') {
         prevX = currX;
         prevY = currY;
         currX = clientX - canvas.offsetLeft;
         currY = clientY - canvas.offsetTop;
-
         flag = true;
         dot_flag = true;
         if (dot_flag) {
             ctx.beginPath();
-            ctx.fillStyle = x;
+            ctx.fillStyle = color;
             ctx.fillRect(currX, currY, 2, 2);
             ctx.closePath();
             dot_flag = false;
@@ -91,52 +106,37 @@ function findxy(res, clientX, clientY) {
             prevY = currY;
             currX = clientX - canvas.offsetLeft;
             currY = clientY - canvas.offsetTop;
-            draw();
+            draw(color, width);
         }
     }
 }
 
-function draw() {
+function draw(color, width) {
     ctx.beginPath();
     ctx.moveTo(prevX, prevY);
     ctx.lineTo(currX, currY);
-    ctx.strokeStyle = x;
-    ctx.lineWidth = y;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
     ctx.stroke();
     ctx.closePath();
     updateDataURL()
 }
 
 function color(obj) {
-    switch (obj.id) {
-        case 'green':
-            socket.emit( 'color', 'green' );
-            break;
-        case 'blue':
-            socket.emit( 'color', 'blue' );
-            break;
-        case 'red':
-            socket.emit( 'color', 'red' );
-            break;
-        case 'yellow':
-            socket.emit( 'color', 'yellow' );
-            break;
-        case 'orange':
-            socket.emit( 'color', 'orange' );
-            break;
-        case 'black':
-            socket.emit( 'color', 'black' );
-            break;
-        case 'white':
-            socket.emit( 'color', 'white' );
-            break;
-    }
+    myColor = obj.id;
+    if (myColor == 'white') myWidth = 14;
+    else myWidth = 2;
 }
 
 function clear_canvas() {
   if (confirm("clear whiteboard?")) {
-    socket.emit( 'clear' );
+    socket.emit( 'clear', blank_dataURL );
   }
+}
+
+function send_msg() {
+  socket.emit( 'chat message', $('#m').val() );
+  $('#m').val('');
 }
 
 function updateDataURL() {
@@ -148,4 +148,3 @@ function drawDataURL(dataURL) {
   canvas_img.src = dataURL;
   ctx.drawImage(canvas_img, 0, 0);
 }
-

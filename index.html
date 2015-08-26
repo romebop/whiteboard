@@ -2,36 +2,43 @@
 <html>
   <head>
     <title>whiteboard</title>
-    <link type="text/css" rel="stylesheet" href="/stylesheets/client.css" />
+    <link type='text/css' rel='stylesheet' href='/stylesheets/client.css' />
     <link href='http://fonts.googleapis.com/css?family=Aldrich' rel='stylesheet' type='text/css'>
   </head>
-  <body onload="init_canvas()">
-  <div id="container">
+  <body onload='init_canvas()'>
+  <div id='container'>
    
-    <div id="chat-backdrop" class="title-backdrop"></div>
-    <div id="chat-title">Chat</div>
-    <div id="draw-backdrop" class="title-backdrop"></div>
-    <div id="draw-title">Draw</div>    
+    <div id='chat-backdrop' class='title-backdrop'></div>
+    <div id='chat-title'>Chat</div>
+    <div id='draw-backdrop' class='title-backdrop'></div>
+    <div id='draw-title'>Draw</div>    
     
-    <div id="black" class="color" onclick="color(this)"></div>
-    <div id="green" class="color" onclick="color(this)"></div>
-    <div id="blue" class="color" onclick="color(this)"></div>
-    <div id="red" class="color" onclick="color(this)"></div>
-    <div id="yellow" class="color" onclick="color(this)"></div>
-    <div id="orange" class="color" onclick="color(this)"></div>
-    <div id="white" class="color" onclick="color(this)"></div>
+    <div id='black' class='color' onclick='color(this)'></div>
+    <div id='green' class='color' onclick='color(this)'></div>
+    <div id='blue' class='color' onclick='color(this)'></div>
+    <div id='red' class='color' onclick='color(this)'></div>
+    <div id='yellow' class='color' onclick='color(this)'></div>
+    <div id='orange' class='color' onclick='color(this)'></div>
+    <div id='white' class='color' onclick='color(this)'></div>
 
-    <div id="chatbox"></div>
-    <canvas id="whiteboard" width="698" height="499">HTML5 canvas not supported.</canvas>
+    <div id='chatbox'>
+      <ul id='messages'></ul>
+      <form id='chatform' onsubmit='send_msg()'>
+        <input id='m' autocomplete='off' />
+        <button>^</button>
+      </form>
+    </div>
 
-    <div id="eraser">eraser:</div>
-    <div id="white" onclick="color(this)"></div>
-    <div id="clear">clear:</div>
-    <div id="x" onclick="clear_canvas()">x</div>
+    <canvas id='whiteboard' width='698' height='499'>HTML5 canvas not supported.</canvas>
+
+    <div id='eraser'>eraser:</div>
+    <div id='white' onclick='color(this)'></div>
+    <div id='clear'>clear:</div>
+    <div id='x' onclick='clear_canvas()'>x</div>
 
   </div>
-  <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
-  <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
-  <script src="/javascripts/client.js"></script>
+  <script src='https://cdn.socket.io/socket.io-1.2.0.js'></script>
+  <script src='http://code.jquery.com/jquery-1.11.1.js'></script>
+  <script src='/javascripts/client.js'></script>
   </body>
 </html>
