@@ -72,6 +72,53 @@ html, body {
   opacity: 1;
 }
 
+.indicator {
+    position: absolute;
+    display: none;
+    width: 0;
+    height: 0;
+    border-right: 9px solid #b4c5f6;
+    border-top: 9px solid transparent;
+    border-left: 9px solid transparent;
+    border-bottom: 9px solid #b4c5f6;
+}
+
+#onblack {
+  display: block;
+  left: 640px;
+  top: 40px;
+}
+
+#ongreen {
+  display: block;
+  left: 740px;
+  top: 40px;
+}
+
+#onblue {
+  display: block;
+  left: 840px;
+  top: 40px;
+}
+
+#onred {
+  display: block;
+  left: 940px;
+  top: 40px;
+}
+
+#onyellow {
+  display: block;
+  left: 1040px;
+  top: 40px;
+}
+
+#onorange {
+  display: block;
+  left: 1140px;
+  top: 40px;
+}
+
 #black {
   left: 660px;
   background: black;

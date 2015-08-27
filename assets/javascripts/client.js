@@ -2,10 +2,9 @@
 
 var socket = io();
 
-// assign client id
-socket.on('client_id', function(client_id) {
-  console.log('we make it to client_id');
-  id = client_id;
+// assign connection id
+socket.on('connection_id', function(connection_id) {
+  id = connection_id;
 });
 
 // load global canvas
@@ -31,9 +30,9 @@ socket.on('clear', function() {
 });
 
 socket.on('chat message', function(params) {
-  var client_id = params['client_id'];
+  var connection_id = params['connection_id'];
   var msg = params['msg'];
-  $('#messages').append($('<li>').text('client ' + client_id + ': ' + msg));
+  $('#messages').append($('<li>').text('[' + displayTime() + ']' + ' ' + 'client ' + connection_id + ': ' + msg));
   $('#messages').scrollTop( $('#messages')[0].scrollHeight );
 });
 
@@ -53,7 +52,8 @@ var canvas,
   dot_flag = false,
   myColor = 'black', 
   myWidth = 2,
-  id;
+  id,
+  handle;
 
 function init_canvas() {
     canvas = document.getElementById('whiteboard');
@@ -132,8 +132,13 @@ function draw(color, width) {
 
 function color(obj) {
     myColor = obj.id;
-    if (myColor == 'white') myWidth = 14;
-    else myWidth = 2;
+    if (myColor == 'white') {
+      myWidth = 14;
+      $('.indicator').attr('id', null);
+    } else {
+      myWidth = 2;
+      $('.indicator').attr('id', 'on' + myColor);
+    }
 }
 
 function clear_canvas() {
@@ -143,7 +148,7 @@ function clear_canvas() {
 }
 
 $('form').submit(function() {
-  socket.emit('chat message', { 'client_id': id, 'msg': $('#m').val() } );
+  socket.emit('chat message', { 'connection_id': id, 'msg': $('#m').val() } );
   $('#m').val('');
   return false;
 });
@@ -156,4 +161,25 @@ function drawDataURL(dataURL) {
   var canvas_img = new Image();
   canvas_img.src = dataURL;
   ctx.drawImage(canvas_img, 0, 0);
+}
+
+function displayTime() {
+    var str = '';
+    var currentTime = new Date()
+    var hours = currentTime.getHours()
+    var minutes = currentTime.getMinutes()
+    var seconds = currentTime.getSeconds()
+    if (minutes < 10) {
+        minutes = '0' + minutes
+    }
+    if (seconds < 10) {
+        seconds = '0' + seconds
+    }
+    str += hours + ':' + minutes; // + ':' + seconds + ' ';
+    if(hours > 11){
+        str += 'pm'
+    } else {
+        str += 'am'
+    }
+    return str;
 }

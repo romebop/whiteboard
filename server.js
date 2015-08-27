@@ -25,7 +25,7 @@ io.on('connection', function(socket) {
   
   console.log("a connection has been made. id: " + connection_id);
   // assign id to client
-  socket.emit('client_id', connection_id);
+  socket.emit('connection_id', connection_id);
   connection_id++;
 
   // emit canvas state for client to load
