@@ -1,4 +1,5 @@
-# quantumumesh
+# whiteboard
 
-Piazza Hackathon
-----------------
+* install node
+* npm install
+* localhost:3000
