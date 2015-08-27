@@ -33,8 +33,31 @@ socket.on('clear', function() {
 socket.on('chat message', function(params) {
   var connection_id = params['connection_id'];
   var msg = params['msg'];
-  $('#messages').append($('<li>').text('[' + displayTime() + ']' + ' ' + 'client ' + connection_id + ': ' + msg));
+  var change_message_color = params['change_message_color'];
+  var turn_white_on_change;
+
+  console.log('the condition: ');
+  console.log( $( '#messages li' ).last().hasClass( 'white-msg' ) );
+
+  if ( $( '#messages li' ).last()[0] == null ) {
+    turn_white_on_change = false;
+  } else if ( $( '#messages li' ).last().hasClass( 'white-msg' ) ) {
+    turn_white_on_change = false;
+  } else {
+    turn_white_on_change = true;
+  }
+
+  console.log('change color: ' + change_message_color);
+  console.log('turn white: ' + turn_white_on_change);
+
+  if ( (change_message_color && turn_white_on_change) || (!change_message_color && !turn_white_on_change) ) {
+    $('#messages').append($('<li>').text('[' + displayTime() + ']' + ' ' + 'client ' + connection_id + ': ' + msg).addClass('white-msg'));
+  } else {
+    $('#messages').append($('<li>').text('[' + displayTime() + ']' + ' ' + 'client ' + connection_id + ': ' + msg).addClass('cloud-msg'));
+  }
+
   $('#messages').scrollTop( $('#messages')[0].scrollHeight );
+
 });
 
 /* canvas drawing logic */
@@ -158,21 +181,25 @@ function drawDataURL(dataURL) {
 
 function displayTime() {
     var str = '';
-    var currentTime = new Date()
-    var hours = currentTime.getHours()
-    var minutes = currentTime.getMinutes()
-    var seconds = currentTime.getSeconds()
+    var currentTime = new Date();
+    var hours = currentTime.getHours();
+    var minutes = currentTime.getMinutes();
+    var seconds = currentTime.getSeconds();
+    var am_pm;
     if (minutes < 10) {
-        minutes = '0' + minutes
+        minutes = '0' + minutes;
     }
     if (seconds < 10) {
-        seconds = '0' + seconds
+        seconds = '0' + seconds;
     }
-    str += hours + ':' + minutes; // + ':' + seconds + ' ';
-    if(hours > 11){
-        str += 'pm'
+    if(hours > 11) {
+        am_pm = 'pm'
+        if (hours > 12) {
+          hours -= 12
+        }
     } else {
-        str += 'am'
+        am_pm = 'am'
     }
+    str += hours + ':' + minutes + am_pm; // + ':' + seconds + ' ';
     return str;
 }

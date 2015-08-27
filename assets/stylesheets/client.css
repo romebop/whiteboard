@@ -157,7 +157,7 @@ html, body {
   height: 499px;
   background: #fff;
 }
-/* from here */
+
 #chatform {
   position: fixed;
   background: #000; 
@@ -200,10 +200,14 @@ html, body {
   padding: 5px 10px; 
 }
 
-#messages li:nth-child(odd) { 
+#messages li.white-msg { 
   background: #fff; 
 }
-/* to here */
+
+#messages li.cloud-msg {
+  background: #ecf0f1;
+} 
+
 #whiteboard {
   position: absolute;
   top: 99px;

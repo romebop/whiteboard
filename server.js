@@ -6,6 +6,7 @@ var favicon = require('serve-favicon');
 
 var connection_id = 1;
 var canvas_dataURL; // dataURL representation of global canvas
+var messenger_id = 1; // used for chat message distinction
 
 app.use(favicon(__dirname + '/assets/images/favicon.ico'));
 
@@ -43,6 +44,13 @@ io.on('connection', function(socket) {
   });
 
   socket.on('chat message', function(params) {
+    next_messenger_id = params['connection_id'];
+    if (next_messenger_id == messenger_id) {
+      params['change_message_color'] = false;
+    } else {
+      params['change_message_color'] = true;
+    }
+    messenger_id = next_messenger_id;
     io.emit('chat message', params);
   });
 
