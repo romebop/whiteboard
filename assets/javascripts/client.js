@@ -2,6 +2,12 @@
 
 var socket = io();
 
+// assign client id
+socket.on('client_id', function(client_id) {
+  console.log('we make it to client_id');
+  id = client_id;
+});
+
 // load global canvas
 socket.on('load', function(params) {
   canvas_dataURL = params['canvas_dataURL'];
@@ -20,14 +26,15 @@ socket.on('draw', function(params) {
 });
 
 socket.on('clear', function() {
-  console.log("we make it to clear");
   drawDataURL(blank_dataURL);
   updateDataURL();
-  //ctx.clearRect(0, 0, canvas.width, canvas.height);
 });
 
-socket.on('chat message', function(msg) {
-  $('#messages').append($('<li>').text(msg));
+socket.on('chat message', function(params) {
+  var client_id = params['client_id'];
+  var msg = params['msg'];
+  $('#messages').append($('<li>').text('client ' + client_id + ': ' + msg));
+  $('#messages').scrollTop( $('#messages')[0].scrollHeight );
 });
 
 /* canvas drawing logic */
@@ -45,17 +52,18 @@ var canvas,
   currY = 0, 
   dot_flag = false,
   myColor = 'black', 
-  myWidth = 2;
+  myWidth = 2,
+  id;
 
 function init_canvas() {
     canvas = document.getElementById('whiteboard');
     ctx = canvas.getContext('2d');
 
+    // create and store blank canvas state
     ctx.beginPath();
     ctx.fillStyle = 'white';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.closePath();
-
     blank_dataURL = canvas.toDataURL();
 
     w = canvas.width;
@@ -134,10 +142,11 @@ function clear_canvas() {
   }
 }
 
-function send_msg() {
-  socket.emit( 'chat message', $('#m').val() );
+$('form').submit(function() {
+  socket.emit('chat message', { 'client_id': id, 'msg': $('#m').val() } );
   $('#m').val('');
-}
+  return false;
+});
 
 function updateDataURL() {
   canvas_dataURL = canvas.toDataURL();

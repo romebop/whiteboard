@@ -4,7 +4,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var favicon = require('serve-favicon');
 
-var connection_number = 0;
+var connection_id = 1;
 var canvas_dataURL; // dataURL representation of global canvas
 
 app.use(favicon(__dirname + '/assets/images/favicon.ico'));
@@ -23,8 +23,10 @@ http.listen(app.get('port'), function() {
 // per connection to client:
 io.on('connection', function(socket) {
   
-  console.log("a connection has been made. number: " + connection_number);
-  connection_number++;
+  console.log("a connection has been made. id: " + connection_id);
+  // assign id to client
+  socket.emit('client_id', connection_id);
+  connection_id++;
 
   // emit canvas state for client to load
   socket.emit('load', { 'canvas_dataURL': canvas_dataURL });
@@ -40,8 +42,8 @@ io.on('connection', function(socket) {
     io.emit('clear');
   });
 
-  socket.on('chat message', function(msg){
-    io.emit('chat message', msg);
+  socket.on('chat message', function(params) {
+    io.emit('chat message', params);
   });
 
 });
