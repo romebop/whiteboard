@@ -26,8 +26,9 @@ socket.on('draw', function(params) {
 });
 
 socket.on('clear', function() {
-  drawDataURL(blank_dataURL);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   updateDataURL();
+
 });
 
 socket.on('chat message', function(params) {
@@ -44,7 +45,6 @@ socket.on('chat message', function(params) {
 var canvas,
   ctx,
   canvas_dataURL,
-  blank_dataURL, 
   flag = false, 
   prevX = 0, 
   currX = 0, 
@@ -58,13 +58,6 @@ var canvas,
 function init_canvas() {
     canvas = document.getElementById('whiteboard');
     ctx = canvas.getContext('2d');
-
-    // create and store blank canvas state
-    ctx.beginPath();
-    ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.closePath();
-    blank_dataURL = canvas.toDataURL();
 
     w = canvas.width;
     h = canvas.height;
@@ -138,7 +131,7 @@ function color(obj) {
 
 function clear_canvas() {
   if (confirm("clear whiteboard?")) {
-    socket.emit( 'clear', blank_dataURL );
+    socket.emit( 'clear');
   }
 }
 

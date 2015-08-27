@@ -37,8 +37,8 @@ io.on('connection', function(socket) {
     io.emit('draw', params);
   });
 
-  socket.on('clear', function(blank_dataURL) {
-    canvas_dataURL = blank_dataURL;
+  socket.on('clear', function() {
+    canvas_dataURL = null;
     io.emit('clear');
   });
 
