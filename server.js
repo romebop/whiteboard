@@ -70,7 +70,6 @@ io.on('connection', function(socket) {
        chat_history.shift();
     }
 
-
     io.emit('chat message', output);
   });
 

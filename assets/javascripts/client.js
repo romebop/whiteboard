@@ -194,4 +194,3 @@ function gridMode() {
     $('#whiteboard').addClass('gridMode');
   }
 }
-
