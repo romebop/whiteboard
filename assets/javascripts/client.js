@@ -219,3 +219,11 @@ function displayTime() {
     str += hours + ':' + minutes + ' ' + am_pm; // + ':' + seconds + ' ';
     return str;
 }
+
+function gridMode() {
+  if ( $('#whiteboard').hasClass('gridMode')) {
+    $('#whiteboard').removeClass('gridMode');
+  } else {
+    $('#whiteboard').addClass('gridMode');
+  }
+}
