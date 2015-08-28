@@ -18,10 +18,9 @@ socket.on('load', function(params) {
 
   var chat_history = params['chat_history'];
 
-  var display_this_msg = 0;
-  while(chat_history.length) {
-     write_chat( chat_history[display_this_msg] );
-     chat_history.shift();
+
+  for (i = 0; i < chat_history.length; i++) {
+     write_chat( chat_history[i] );
   } 
 
 });
