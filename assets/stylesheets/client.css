@@ -149,6 +149,46 @@ html, body {
   background: orange;
 }
 
+#handlebox {
+  position: absolute;
+  top: 100px;
+  left: 100px;
+  width: 298px;
+  height: 498px;
+  background: #5a73ff;
+}
+
+#handleform {
+  position: absolute;
+  left: 80px;
+  top: 200px;
+  background: #0062bd; 
+  padding: 2px;
+  width: 155px; 
+  height: 35px;
+}
+
+#handleform input { 
+  border: 0; 
+  padding: 11px; 
+  width: 94px; 
+  margin-right: .5%; 
+}
+
+#handleform button {
+  position: absolute;
+  right: 2px;
+  width: 37px;
+  height: 35px;
+  background: #b4c5f6; 
+  border: none; 
+  padding: 11px; 
+  color: white;
+  font-size: 100%;
+  font-family: Aldrich, sans-serif;
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+}
+
 #chatbox {
   position: absolute;
   top: 99px;
@@ -156,6 +196,10 @@ html, body {
   width: 298px;
   height: 499px;
   background: #fff;
+}
+
+.hide {
+  display: none !important;
 }
 
 #chatform {
@@ -193,6 +237,7 @@ html, body {
   margin: 0; 
   padding: 0; 
   overflow-y: scroll;
+  word-wrap: break-word;
   background: #ecf0f1;
 }
 

@@ -1,10 +1,12 @@
 /* client side socket */
 
-var socket = io();
+var socket = io(),
+  myId, 
+  myHandle;
 
 // assign connection id
 socket.on('connection_id', function(connection_id) {
-  id = connection_id;
+  myId = connection_id;
 });
 
 // load global canvas
@@ -32,12 +34,11 @@ socket.on('clear', function() {
 
 socket.on('chat message', function(params) {
   var connection_id = params['connection_id'];
+  var handle = params['handle'];
   var msg = params['msg'];
   var change_message_color = params['change_message_color'];
   var turn_white_on_change;
-
-  console.log('the condition: ');
-  console.log( $( '#messages li' ).last().hasClass( 'white-msg' ) );
+  var identity_string;
 
   if ( $( '#messages li' ).last()[0] == null ) {
     turn_white_on_change = false;
@@ -47,17 +48,40 @@ socket.on('chat message', function(params) {
     turn_white_on_change = true;
   }
 
-  console.log('change color: ' + change_message_color);
-  console.log('turn white: ' + turn_white_on_change);
+  if (handle) {
+    identity_string = handle;
+  } else {
+    identity_string = 'client ' + connection_id;
+  }
 
   if ( (change_message_color && turn_white_on_change) || (!change_message_color && !turn_white_on_change) ) {
-    $('#messages').append($('<li>').text('[' + displayTime() + ']' + ' ' + 'client ' + connection_id + ': ' + msg).addClass('white-msg'));
+    $('#messages').append($('<li> [' + displayTime() + '] <b>' + identity_string + '</b>: ' + msg + '</li>').addClass('white-msg'));
   } else {
-    $('#messages').append($('<li>').text('[' + displayTime() + ']' + ' ' + 'client ' + connection_id + ': ' + msg).addClass('cloud-msg'));
+    $('#messages').append($('<li> [' + displayTime() + '] <b>' + identity_string + '</b>: ' + msg + '</li>').addClass('cloud-msg'));
   }
 
   $('#messages').scrollTop( $('#messages')[0].scrollHeight );
+});
 
+$(function() {
+  $("#h").focus();
+});
+
+$('#handleform').submit(function() {
+  myHandle = $('#h').val();
+  console.log('assigned handle is: ' + myHandle);
+  $('#handlebox').addClass('hide');
+  $('#chatbox').removeClass('hide');
+  $(function() {
+    $("#m").focus();
+  });
+  return false;
+});
+
+$('#chatform').submit(function() {
+  socket.emit('chat message', { 'connection_id': myId, 'handle': myHandle, 'msg': $('#m').val() } );
+  $('#m').val('');
+  return false;
 });
 
 /* canvas drawing logic */
@@ -74,9 +98,7 @@ var canvas,
   currY = 0, 
   dot_flag = false,
   myColor = 'black', 
-  myWidth = 2,
-  id,
-  handle;
+  myWidth = 2;
 
 function init_canvas() {
     canvas = document.getElementById('whiteboard');
@@ -163,12 +185,6 @@ function clear_canvas() {
   }
 }
 
-$('form').submit(function() {
-  socket.emit('chat message', { 'connection_id': id, 'msg': $('#m').val() } );
-  $('#m').val('');
-  return false;
-});
-
 function updateDataURL() {
   canvas_dataURL = canvas.toDataURL();
 }
@@ -200,6 +216,6 @@ function displayTime() {
     } else {
         am_pm = 'am'
     }
-    str += hours + ':' + minutes + am_pm; // + ':' + seconds + ' ';
+    str += hours + ':' + minutes + ' ' + am_pm; // + ':' + seconds + ' ';
     return str;
 }
