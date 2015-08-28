@@ -258,10 +258,40 @@ html, body {
   top: 99px;
   left: 500px;
   background: #fff;
+  transition-duration: 0.3s;
+}
+
+#whiteboard.gridMode {
+  opacity: 0.5;
+  transition-duration: 0.3s;
 }
 
 #whiteboard:hover{
   cursor: cell;
+}
+
+#grid {
+  position: absolute;
+  color: white;
+  font-size: 120%;
+  font-family: Aldrich, sans-serif;
+  left: 934px;
+  top: 603px;
+}
+
+#hash {
+  position: absolute;
+  color: white;
+  font-size: 120%;
+  font-style: bold;
+  font-family: Aldrich, sans-serif;
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+  left: 982px;
+  top: 603px;  
+}
+
+#hash:hover {
+  cursor: pointer;
 }
 
 #eraser {
@@ -275,10 +305,10 @@ html, body {
 
 #white {
   position: absolute;
-  width: 15px;
-  height: 15px;
-  left: 1080px;
-  top: 601px;
+  width: 14px;
+  height: 14px;
+  left: 1081px;
+  top: 602px;
   background: white;
   border-radius: 10px;
   border: 1px solid #000;
@@ -297,7 +327,7 @@ html, body {
   color: white;
   font-size: 130%;
   font-family: Aldrich, sans-serif;
-  left: 1120px;
+  left: 1119px;
   top: 602px;
 }
 

@@ -20,7 +20,8 @@ socket.on('load', function(params) {
   var chat_history = params['chat_history'];
   var chat_history_current = params['chat_history_current'];
   while(chat_history_start != chat_history_current) {
-     if (chat_history_start > chat_history.length()) break;
+     if (chat_history_start > chat_history.length) break;
+
 //     write_chat( {'msg' : chat_history[chat_history_start]} );
      chat_history_start = (chat_history_start+1) % 20;  
   } 
@@ -45,12 +46,7 @@ socket.on('clear', function() {
 });
 
 socket.on('chat message', function(params) {
-  var handle = params['handle'];
-  var msg = params['msg'];
-  var color = params['color'];
-
-  $('#messages').append($('<li> [' + displayTime() + '] <b>' + handle + '</b>: ' + msg + '</li>').addClass(color));
-  $('#messages').scrollTop( $('#messages')[0].scrollHeight );
+  write_chat(params);
 });
 
 $(function() {
@@ -75,6 +71,13 @@ $('#chatform').submit(function() {
   $('#m').val('');
   return false;
 });
+
+function write_chat(params) {
+  var msg = params['msg'];
+
+  $('#messages').append($(msg));
+  $('#messages').scrollTop( $('#messages')[0].scrollHeight );
+}
 
 /* canvas drawing logic */
 // source: http://goo.gl/xxprq8
@@ -187,27 +190,11 @@ function drawDataURL(dataURL) {
   ctx.drawImage(canvas_img, 0, 0);
 }
 
-function displayTime() {
-    var str = '';
-    var currentTime = new Date();
-    var hours = currentTime.getHours();
-    var minutes = currentTime.getMinutes();
-    var seconds = currentTime.getSeconds();
-    var am_pm;
-    if (minutes < 10) {
-        minutes = '0' + minutes;
-    }
-    if (seconds < 10) {
-        seconds = '0' + seconds;
-    }
-    if(hours > 11) {
-        am_pm = 'pm'
-        if (hours > 12) {
-          hours -= 12
-        }
-    } else {
-        am_pm = 'am'
-    }
-    str += hours + ':' + minutes + ' ' + am_pm; // + ':' + seconds + ' ';
-    return str;
+function gridMode() {
+  if ( $('#whiteboard').hasClass('gridMode')) {
+    $('#whiteboard').removeClass('gridMode');
+  } else {
+    $('#whiteboard').addClass('gridMode');
+  }
 }
+

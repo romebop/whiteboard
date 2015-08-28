@@ -51,24 +51,54 @@ io.on('connection', function(socket) {
   socket.on('chat message', function(params) {
     next_messenger_id = params['connection_id'];
     var color;
-
+    var msg = params['msg'];
+    var handle = params['handle'];
     // Assign chat background color
     // change chat color if next msg sender is different from last one
     if (last_messenger_id != next_messenger_id) {
         current_chat_color = (current_chat_color+1)%2;
     }
     last_messenger_id = next_messenger_id;
-    color = chat_colors[current_chat_color];	   
-    params['color'] = color;
+    color = chat_colors[current_chat_color];	  
+
+    var msg_string = '<li class="' + color + '"> [' + displayTime() + '] <b>' + handle + '</b>: ' + msg + '</li>'; 
+    var output = {};
+    output['msg'] = msg_string;
+
 /*
     chat_history_current = (chat_history_current+1) % 20;
     if (chat_history_current == chat_history_start) {
          chat_history_start = (chat_history_start+1) % 20; 
     }
-    chat_history[chat_history_current] = params['msg'];
+    chat_history[chat_history_current] = msg_string;
 */
 
-    io.emit('chat message', params);
+    io.emit('chat message', output);
   });
 
 });
+
+function displayTime() {
+    var str = '';
+    var currentTime = new Date();
+    var hours = currentTime.getHours();
+    var minutes = currentTime.getMinutes();
+    var seconds = currentTime.getSeconds();
+    var am_pm;
+    if (minutes < 10) {
+        minutes = '0' + minutes;
+    }
+    if (seconds < 10) {
+        seconds = '0' + seconds;
+    }
+    if(hours > 11) {
+        am_pm = 'pm'
+        if (hours > 12) {
+          hours -= 12
+        }
+    } else {
+        am_pm = 'am'
+    }
+    str += hours + ':' + minutes + ' ' + am_pm; // + ':' + seconds + ' ';
+    return str;
+}
