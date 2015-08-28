@@ -6,7 +6,12 @@ var favicon = require('serve-favicon');
 
 var connection_id = 1;
 var canvas_dataURL; // dataURL representation of global canvas
-var messenger_id = 1; // used for chat message distinction
+var last_messenger_id = -1;
+var chat_colors = ['white-msg','cloud-msg'];
+var current_chat_color = 0;
+var chat_history;     // used to store the last 20 messages
+var chat_history_start = 0;  // used to organize the chathistory
+var chat_history_current  = -1;   // used to organize the chathistory
 
 app.use(favicon(__dirname + '/assets/images/favicon.ico'));
 
@@ -30,7 +35,7 @@ io.on('connection', function(socket) {
   connection_id++;
 
   // emit canvas state for client to load
-  socket.emit('load', { 'canvas_dataURL': canvas_dataURL });
+  socket.emit('load', { 'canvas_dataURL': canvas_dataURL, 'chat_history' : chat_history, 'chat_history_start' : chat_history_start } );
 
   // receive a client emission, save canvas state, & emit to all clients
   socket.on('draw', function(params) {
@@ -45,12 +50,24 @@ io.on('connection', function(socket) {
 
   socket.on('chat message', function(params) {
     next_messenger_id = params['connection_id'];
-    if (next_messenger_id == messenger_id) {
-      params['change_message_color'] = false;
-    } else {
-      params['change_message_color'] = true;
+    var color;
+
+    // Assign chat background color
+    // change chat color if next msg sender is different from last one
+    if (last_messenger_id != next_messenger_id) {
+        current_chat_color = (current_chat_color+1)%2;
     }
-    messenger_id = next_messenger_id;
+    last_messenger_id = next_messenger_id;
+    color = chat_colors[current_chat_color];	   
+    params['color'] = color;
+/*
+    chat_history_current = (chat_history_current+1) % 20;
+    if (chat_history_current == chat_history_start) {
+         chat_history_start = (chat_history_start+1) % 20; 
+    }
+    chat_history[chat_history_current] = params['msg'];
+*/
+
     io.emit('chat message', params);
   });
 
