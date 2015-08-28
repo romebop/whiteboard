@@ -15,17 +15,15 @@ socket.on('load', function(params) {
   canvas_dataURL = params['canvas_dataURL'];
   if (canvas_dataURL == null) ctx.clearRect(0, 0, canvas.width, canvas.height);
   else drawDataURL(canvas_dataURL);
-/*
-  var chat_history_start = params['chat_history_start'];
-  var chat_history = params['chat_history'];
-  var chat_history_current = params['chat_history_current'];
-  while(chat_history_start != chat_history_current) {
-     if (chat_history_start > chat_history.length) break;
 
-//     write_chat( {'msg' : chat_history[chat_history_start]} );
-     chat_history_start = (chat_history_start+1) % 20;  
+  var chat_history = params['chat_history'];
+
+  var display_this_msg = 0;
+  while(chat_history.length > 0) {
+     write_chat( {'msg' : chat_history[display_this_msg]} );
+     chat_history.shift();
   } 
-*/
+
 
 });
 

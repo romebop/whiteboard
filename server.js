@@ -9,9 +9,8 @@ var canvas_dataURL; // dataURL representation of global canvas
 var last_messenger_id = -1;
 var chat_colors = ['white-msg','cloud-msg'];
 var current_chat_color = 0;
-var chat_history;     // used to store the last 20 messages
-var chat_history_start = 0;  // used to organize the chathistory
-var chat_history_current  = -1;   // used to organize the chathistory
+var chat_history = [];     // used to store the last 20 messages
+var chat_history_current  = 0;   // used to organize the chathistory
 
 app.use(favicon(__dirname + '/assets/images/favicon.ico'));
 
@@ -35,7 +34,7 @@ io.on('connection', function(socket) {
   connection_id++;
 
   // emit canvas state for client to load
-  socket.emit('load', { 'canvas_dataURL': canvas_dataURL, 'chat_history' : chat_history, 'chat_history_start' : chat_history_start } );
+  socket.emit('load', { 'canvas_dataURL': canvas_dataURL, 'chat_history' : chat_history } );
 
   // receive a client emission, save canvas state, & emit to all clients
   socket.on('draw', function(params) {
@@ -65,13 +64,12 @@ io.on('connection', function(socket) {
     var output = {};
     output['msg'] = msg_string;
 
-/*
-    chat_history_current = (chat_history_current+1) % 20;
-    if (chat_history_current == chat_history_start) {
-         chat_history_start = (chat_history_start+1) % 20; 
+    // add to chat history
+    chat_history.push(msg_string);
+    if (chat_history.length > 20) {
+       chat_history.shift();
     }
-    chat_history[chat_history_current] = msg_string;
-*/
+
 
     io.emit('chat message', output);
   });
