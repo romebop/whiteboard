@@ -21,6 +21,11 @@ http.listen(app.get('port'), function() {
   console.log('Server running on localhost:' + app.get('port'));
 });
 
+io.configure(function () {  
+  io.set("transports", ["xhr-polling"]); 
+  io.set("polling duration", 10); 
+});
+
 // per connection to client:
 io.on('connection', function(socket) {
   
