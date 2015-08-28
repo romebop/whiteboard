@@ -8,13 +8,25 @@ var myId,
 // assign connection id
 socket.on('connection_id', function(connection_id) {
   myId = connection_id;
+  myHandle = "Client " + myId;
 });
 
-// load global canvas
+// load global canvas and past 20 chats
 socket.on('load', function(params) {
   canvas_dataURL = params['canvas_dataURL'];
   if (canvas_dataURL == null) ctx.clearRect(0, 0, canvas.width, canvas.height);
   else drawDataURL(canvas_dataURL);
+/*
+  var chat_history_start = params['chat_history_start'];
+  var chat_history = params['chat_history'];
+  var chat_history_current = params['chat_history_current'];
+  while(chat_history_start != chat_history_current) {
+     if (chat_history_start > chat_history.length()) break;
+//     write_chat( {'msg' : chat_history[chat_history_start]} );
+     chat_history_start = (chat_history_start+1) % 20;  
+  } 
+*/
+
 });
 
 // receive io emissions from server
@@ -34,33 +46,11 @@ socket.on('clear', function() {
 });
 
 socket.on('chat message', function(params) {
-  var connection_id = params['connection_id'];
   var handle = params['handle'];
   var msg = params['msg'];
-  var change_message_color = params['change_message_color'];
-  var turn_white_on_change;
-  var identity_string;
+  var color = params['color'];
 
-  if ( $( '#messages li' ).last()[0] == null ) {
-    turn_white_on_change = false;
-  } else if ( $( '#messages li' ).last().hasClass( 'white-msg' ) ) {
-    turn_white_on_change = false;
-  } else {
-    turn_white_on_change = true;
-  }
-
-  if (handle) {
-    identity_string = handle;
-  } else {
-    identity_string = 'client ' + connection_id;
-  }
-
-  if ( (change_message_color && turn_white_on_change) || (!change_message_color && !turn_white_on_change) ) {
-    $('#messages').append($('<li> [' + displayTime() + '] <b>' + identity_string + '</b>: ' + msg + '</li>').addClass('white-msg'));
-  } else {
-    $('#messages').append($('<li> [' + displayTime() + '] <b>' + identity_string + '</b>: ' + msg + '</li>').addClass('cloud-msg'));
-  }
-
+  $('#messages').append($('<li> [' + displayTime() + '] <b>' + handle + '</b>: ' + msg + '</li>').addClass(color));
   $('#messages').scrollTop( $('#messages')[0].scrollHeight );
 });
 
@@ -69,7 +59,9 @@ $(function() {
 });
 
 $('#handleform').submit(function() {
-  myHandle = $('#h').val();
+  if (!( $('#h').val() == '') ) {
+     myHandle = $('#h').val();
+  }
   console.log('assigned handle is: ' + myHandle);
   $('#handlebox').addClass('hide');
   $('#chatbox').removeClass('hide');
