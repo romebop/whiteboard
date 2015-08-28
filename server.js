@@ -61,16 +61,14 @@ io.on('connection', function(socket) {
     color = chat_colors[current_chat_color];	  
 
     var msg_string = '<li class="' + color + '"> [' + displayTime() + '] <b>' + handle + '</b>: ' + msg + '</li>'; 
-    var output = {};
-    output['msg'] = msg_string;
-
+    
     // add to chat history
     chat_history.push(msg_string);
     if (chat_history.length > 20) {
        chat_history.shift();
     }
 
-    io.emit('chat message', output);
+    io.emit('chat message', msg_string);
   });
 
 });

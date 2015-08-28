@@ -20,7 +20,7 @@ socket.on('load', function(params) {
 
   var display_this_msg = 0;
   while(chat_history.length) {
-     write_chat( {'msg' : chat_history[display_this_msg]} );
+     write_chat( chat_history[display_this_msg] );
      chat_history.shift();
   } 
 
@@ -42,8 +42,8 @@ socket.on('clear', function() {
 
 });
 
-socket.on('chat message', function(params) {
-  write_chat(params);
+socket.on('chat message', function(msg) {
+  write_chat(msg);
 });
 
 $(function() {
@@ -54,9 +54,9 @@ $('#handleform').submit(function() {
   if (!( $('#h').val() == '') ) {
      myHandle = $('#h').val();
   }
-  console.log('assigned handle is: ' + myHandle);
   $('#handlebox').addClass('hide');
   $('#chatbox').removeClass('hide');
+  $('#messages').scrollTop( $('#messages')[0].scrollHeight );
   $(function() {
     $("#m").focus();
   });
@@ -69,9 +69,7 @@ $('#chatform').submit(function() {
   return false;
 });
 
-function write_chat(params) {
-  var msg = params['msg'];
-
+function write_chat(msg) {
   $('#messages').append($(msg));
   $('#messages').scrollTop( $('#messages')[0].scrollHeight );
 }
