@@ -1,5 +1,6 @@
 # whiteboard
 
 * install node
-* npm install
+* npm install -d
+* node server.js
 * localhost:3000
