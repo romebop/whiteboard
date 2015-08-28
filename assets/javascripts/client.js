@@ -1,7 +1,8 @@
 /* client side socket */
 
-var socket = io(),
-  myId, 
+var socket = io.connect(window.location.hostname);
+//var socket = io();
+var myId, 
   myHandle;
 
 // assign connection id
