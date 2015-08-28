@@ -14,7 +14,7 @@ socket.on('connection_id', function(connection_id) {
 socket.on('load', function(params) {
   canvas_dataURL = params['canvas_dataURL'];
   if (canvas_dataURL == null) ctx.clearRect(0, 0, canvas.width, canvas.height);
-  else drawDataURL(canvas_dataURL);
+  else draw_data_URL(canvas_dataURL);
 
   var chat_history = params['chat_history'];
 
@@ -37,7 +37,7 @@ socket.on('draw', function(params) {
 
 socket.on('clear', function() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  updateDataURL();
+  update_data_URL();
 
 });
 
@@ -129,7 +129,7 @@ function findxy(res, clientX, clientY, color, width) {
             ctx.fillRect(currX, currY, 2, 2);
             ctx.closePath();
             dot_flag = false;
-            updateDataURL()
+            update_data_URL()
         }
     }
     if (res == 'up' || res == 'out') {
@@ -154,7 +154,7 @@ function draw(color, width) {
     ctx.lineWidth = width;
     ctx.stroke();
     ctx.closePath();
-    updateDataURL()
+    update_data_URL()
 }
 
 function color(obj) {
@@ -174,17 +174,17 @@ function clear_canvas() {
   }
 }
 
-function updateDataURL() {
+function update_data_URL() {
   canvas_dataURL = canvas.toDataURL();
 }
 
-function drawDataURL(dataURL) {
+function draw_data_URL(dataURL) {
   var canvas_img = new Image();
   canvas_img.src = dataURL;
   ctx.drawImage(canvas_img, 0, 0);
 }
 
-function gridMode() {
+function grid_mode() {
   if ( $('#whiteboard').hasClass('gridMode')) {
     $('#whiteboard').removeClass('gridMode');
   } else {

@@ -59,21 +59,18 @@ io.on('connection', function(socket) {
     }
     last_messenger_id = next_messenger_id;
     color = chat_colors[current_chat_color];	  
-
-    var msg_string = '<li class="' + color + '"> [' + displayTime() + '] <b>' + handle + '</b>: ' + msg + '</li>'; 
-    
+    var msg_string = '<li class="' + color + '"> <p id="time">[' + display_time() + ']</p> <b>' + handle + '</b>: ' + msg + '</li>'; 
     // add to chat history
     chat_history.push(msg_string);
     if (chat_history.length > 20) {
        chat_history.shift();
     }
-
     io.emit('chat message', msg_string);
   });
 
 });
 
-function displayTime() {
+function display_time() {
     var str = '';
     var currentTime = new Date();
     var hours = currentTime.getHours();
@@ -94,6 +91,6 @@ function displayTime() {
     } else {
         am_pm = 'am'
     }
-    str += hours + ':' + minutes + ' ' + am_pm; // + ':' + seconds + ' ';
+    str += hours + ':' + minutes + am_pm; // + ':' + seconds + ' ';
     return str;
 }

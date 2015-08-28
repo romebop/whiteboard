@@ -243,6 +243,7 @@ html, body {
 
 #messages li { 
   padding: 5px 10px; 
+  font-size: 90%;
 }
 
 #messages li.white-msg { 
@@ -251,7 +252,12 @@ html, body {
 
 #messages li.cloud-msg {
   background: #ecf0f1;
-} 
+}
+
+#time {
+  display: inline;
+  font-size: 90%;
+}
 
 #whiteboard {
   position: absolute;
