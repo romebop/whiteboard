@@ -8,6 +8,14 @@ var connection_id = 1;
 var canvas_dataURL; // dataURL representation of global canvas
 var messenger_id = 1; // used for chat message distinction
 
+app.configure(function() {  
+  app.set('views', __dirname);
+  app.use(express.bodyParser());
+  app.use(express.methodOverride());
+  app.use(app.router);
+  app.use(express.static(__dirname + '/assets'));
+});
+
 app.use(favicon(__dirname + '/assets/images/favicon.ico'));
 
 app.set('port', (process.env.PORT || 3000));
