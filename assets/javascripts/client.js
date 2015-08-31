@@ -23,6 +23,7 @@ socket.on('load', function(params) {
      write_chat( chat_history[i] );
   } 
 
+//    test_pixel_map();
 });
 
 // receive io emissions from server
@@ -190,4 +191,53 @@ function grid_mode() {
   } else {
     $('#whiteboard').addClass('gridMode');
   }
+}
+
+// pixelMap must conform to how imageData expects pixel data
+// 1.  Pixels are counted starting from top left and row major
+// 2.  Format is [r1,b1,g1,a1,r2,b2,g2,a2,....]
+function draw_from_pixelMap(pixelMap) {
+    var imageData = ctx.getImageData(0,0,canvas.width,canvas.height);
+    var pixels    = imageData.data;
+
+    // I don't understand why but pixels = pixelMap does not work, I think it has to do with pixels should be in int32 and pixelMap could be in int64?
+    for (var pos = 0; pos < canvas.height*canvas.width*4; pos++) {
+	    pixels[pos] = pixelMap[pos];
+    }	
+
+    ctx.putImageData(imageData,0,0);
+}
+
+// tests the function draw_from_pixelMap
+function test_pixel_map() {
+    console.log("testing pixel map");
+    var pixelMap = [];
+
+    var pos = 0;
+
+    var xoff = canvas.width / 3;
+    var yoff = canvas.height/3;
+
+    for (var y = 0; y < canvas.height; y++) {
+	for (var x = 0; x < canvas.width; x++) {
+	    var x2 = x - xoff;
+	    var y2 = y - yoff;
+	    var d  = Math.sqrt(x2*x2+y2*y2);
+	    var t  = Math.sin(d/6.0);
+
+	    var r = t*200;
+	    var g = 125 + t * 80;
+	    var b = 235 + t * 20;
+
+	    pixelMap[pos] = Math.max(0,Math.min(255,r));
+	    pos++;
+	    pixelMap[pos] = Math.max(0,Math.min(255,g));
+	    pos++;
+	    pixelMap[pos] = Math.max(0,Math.min(255,b));
+	    pos++;
+	    pixelMap[pos] = 255;
+	    pos++;
+	}
+    }	
+    draw_from_pixelMap(pixelMap);
 }
