@@ -204,14 +204,16 @@ function display_time(date_ms) {
     if (seconds < 10) {
         seconds = '0' + seconds;
     }
-    if(hours > 11) {
-        am_pm = 'pm'
+    if (hours >= 12) {
+        am_pm = 'pm';
         if (hours > 12) {
-          hours -= 12
+          hours -= 12;
         }
     } else {
-        am_pm = 'am'
+        if (hours == 0) hours = 12;
+        am_pm = 'am';
     }
+    if (hours == 0)
     str += hours + ':' + minutes + am_pm; // + ':' + seconds + ' ';
     return str;
 }
