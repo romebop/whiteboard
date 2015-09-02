@@ -199,21 +199,22 @@ function display_time(date_ms) {
     var seconds = time.getSeconds();
     var am_pm;
     if (minutes < 10) {
-        minutes = '0' + minutes;
+      minutes = '0' + minutes;
     }
     if (seconds < 10) {
-        seconds = '0' + seconds;
+      seconds = '0' + seconds;
     }
     if (hours >= 12) {
-        am_pm = 'pm';
-        if (hours > 12) {
-          hours -= 12;
-        }
+      am_pm = 'pm';
+      if (hours > 12) {
+        hours -= 12;
+      }
     } else {
-        if (hours == 0) hours = 12;
-        am_pm = 'am';
+      am_pm = 'am';
+      if (hours == 0) {
+        hours = 12;
+      }
     }
-    if (hours == 0)
     str += hours + ':' + minutes + am_pm; // + ':' + seconds + ' ';
     return str;
 }
