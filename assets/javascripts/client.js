@@ -13,12 +13,22 @@ socket.on('connection_id', function(connection_id) {
 // load global canvas and past 20 chats
 socket.on('load', function(params) {
   canvas_dataURL = params['canvas_dataURL'];
-  if (canvas_dataURL == null) ctx.clearRect(0, 0, canvas.width, canvas.height);
-  else draw_data_URL(canvas_dataURL);
+  var global_pixel_map = params['pixel_map'];
+  if (!global_pixel_map.length) {
+      console.log("init");
+ //     ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.beginPath();
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0,0,canvas.width,canvas.height);
+            ctx.closePath();
+      var imageData = ctx.getImageData(0,0,canvas.width,canvas.height);
+      socket.emit('init pixel map',{'pixel_map_size' : canvas.width * canvas.height * 4, 'canvas_width' : canvas.width});
+  }
+  else draw_from_pixelMap(global_pixel_map);
 
   var chat_history = params['chat_history'];
 
-
+ 
   for (i = 0; i < chat_history.length; i++) {
      write_chat( chat_history[i] );
   } 
@@ -37,7 +47,11 @@ socket.on('draw', function(params) {
 });
 
 socket.on('clear', function() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+ // ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.beginPath();
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0,0,canvas.width,canvas.height);
+            ctx.closePath();
   update_data_URL();
 
 });
@@ -93,6 +107,7 @@ var canvas,
 function init_canvas() {
     canvas = document.getElementById('whiteboard');
     ctx = canvas.getContext('2d');
+     
 
     w = canvas.width;
     h = canvas.height;
