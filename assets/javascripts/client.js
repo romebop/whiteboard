@@ -18,7 +18,6 @@ socket.on('load', function(params) {
 
   var chat_history = params['chat_history'];
 
-
   for (i = 0; i < chat_history.length; i++) {
      write_chat( chat_history[i] );
   } 
@@ -38,11 +37,10 @@ socket.on('draw', function(params) {
 socket.on('clear', function() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   update_data_URL();
-
 });
 
-socket.on('chat message', function(msg) {
-  write_chat(msg);
+socket.on('chat message', function(msg_obj) {
+  write_chat(msg_obj);
 });
 
 $(function() {
@@ -67,11 +65,6 @@ $('#chatform').submit(function() {
   $('#m').val('');
   return false;
 });
-
-function write_chat(msg) {
-  $('#messages').append($(msg));
-  $('#messages').scrollTop( $('#messages')[0].scrollHeight );
-}
 
 /* canvas drawing logic */
 // source: http://goo.gl/xxprq8
@@ -190,4 +183,35 @@ function grid_mode() {
   } else {
     $('#whiteboard').addClass('gridMode');
   }
+}
+
+function write_chat(msg_obj) {
+  var msg = msg_obj.sub_string_1 + display_time(msg_obj.date_ms) + msg_obj.sub_string_2;
+  $('#messages').append($(msg));
+  $('#messages').scrollTop( $('#messages')[0].scrollHeight );
+}
+
+function display_time(date_ms) {
+    var str = '';
+    var time = new Date(date_ms);
+    var hours = time.getHours();
+    var minutes = time.getMinutes();
+    var seconds = time.getSeconds();
+    var am_pm;
+    if (minutes < 10) {
+        minutes = '0' + minutes;
+    }
+    if (seconds < 10) {
+        seconds = '0' + seconds;
+    }
+    if(hours > 11) {
+        am_pm = 'pm'
+        if (hours > 12) {
+          hours -= 12
+        }
+    } else {
+        am_pm = 'am'
+    }
+    str += hours + ':' + minutes + am_pm; // + ':' + seconds + ' ';
+    return str;
 }

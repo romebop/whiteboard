@@ -59,38 +59,21 @@ io.on('connection', function(socket) {
     }
     last_messenger_id = next_messenger_id;
     color = chat_colors[current_chat_color];	  
-    var msg_string = '<li class="' + color + '"> <p id="time">[' + display_time() + ']</p> <b>' + handle + '</b>: ' + msg + '</li>'; 
+    var sub_string_1 = '<li class="' + color + '"> <p id="time">[';
+    var date_ms = Date.now();
+    var sub_string_2 = ']</p> <b>' + handle + '</b>: ' + msg + '</li>';
+    // array of string + date object + string
+    var msg_obj = { 'sub_string_1': sub_string_1, 'date_ms': date_ms, 'sub_string_2': sub_string_2 }; 
     // add to chat history
-    chat_history.push(msg_string);
+    chat_history.push(msg_obj);
     if (chat_history.length > 20) {
        chat_history.shift();
     }
-    io.emit('chat message', msg_string);
+    io.emit('chat message', msg_obj);
+  });
+
+  socket.on('disconnect', function(){
+    console.log('a user has disconnected.');
   });
 
 });
-
-function display_time() {
-    var str = '';
-    var currentTime = new Date();
-    var hours = currentTime.getHours();
-    var minutes = currentTime.getMinutes();
-    var seconds = currentTime.getSeconds();
-    var am_pm;
-    if (minutes < 10) {
-        minutes = '0' + minutes;
-    }
-    if (seconds < 10) {
-        seconds = '0' + seconds;
-    }
-    if(hours > 11) {
-        am_pm = 'pm'
-        if (hours > 12) {
-          hours -= 12
-        }
-    } else {
-        am_pm = 'am'
-    }
-    str += hours + ':' + minutes + am_pm; // + ':' + seconds + ' ';
-    return str;
-}
