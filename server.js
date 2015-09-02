@@ -51,17 +51,19 @@ io.on('connection', function(socket) {
 
   // receive a client emission, save canvas state, & emit to all clients
   socket.on('draw', function(params) {
-    canvas_dataURL = params['canvas_dataURL'];
+   // canvas_dataURL = params['canvas_dataURL'];
     // update the pixel map
-    var x = params['clientX'];
-    var y = params['clientY'];
+          var flag = params['drawFlag'];
+   if (flag) {
+    var x = params['canvasX'];
+    var y = params['canvasY'];
     var color = params['color'];
     var color_r = (colorbook[color])[0];
     var color_g = (colorbook[color])[1];
     var color_b = (colorbook[color])[2];
    
-    for (var currX = x; currX < x + params['width']; currX++) {
-	for (var currY = y; currY < y + params['width']; currY++) {
+      for (var currY = y; currY < y + params['width']; currY++) {
+	  for (var currX = x; currX < x + params['width']; currX++) {
 	    var pixel_id = 4*(currX + canvas_width * currY);
             pixel_map[pixel_id]   = color_r;
             pixel_map[pixel_id+1] = color_g;
@@ -69,6 +71,7 @@ io.on('connection', function(socket) {
             pixel_map[pixel_id+3] = 255;
 	}
     }
+  }
     io.emit('draw', params);
   });
 

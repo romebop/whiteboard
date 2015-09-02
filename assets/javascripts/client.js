@@ -15,7 +15,6 @@ socket.on('load', function(params) {
   canvas_dataURL = params['canvas_dataURL'];
   var global_pixel_map = params['pixel_map'];
   if (!global_pixel_map.length) {
-      console.log("init");
  //     ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.beginPath();
             ctx.fillStyle = 'white';
@@ -47,12 +46,12 @@ socket.on('draw', function(params) {
 });
 
 socket.on('clear', function() {
- // ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.beginPath();
-            ctx.fillStyle = 'white';
-            ctx.fillRect(0,0,canvas.width,canvas.height);
-            ctx.closePath();
-  update_data_URL();
+    // ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.beginPath();
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.closePath();
+//    update_data_URL();
 
 });
 
@@ -128,7 +127,7 @@ function init_canvas() {
 }
 
 function emit_mouse(type, e) {
-  socket.emit( 'draw', { 'type': type, 'clientX': e.clientX, 'clientY': e.clientY, 'color': myColor, 'width': myWidth, 'canvas_dataURL': canvas_dataURL } )
+  socket.emit( 'draw', { 'type': type, 'clientX': e.clientX, 'clientY': e.clientY, 'color': myColor, 'width': myWidth, 'canvas_dataURL': canvas_dataURL, 'canvasX' : e.clientX - canvas.offsetLeft, 'canvasY' : e.clientY - canvas.offsetTop , 'drawFlag' : flag} )
 }
 
 function findxy(res, clientX, clientY, color, width) {
@@ -170,7 +169,7 @@ function draw(color, width) {
     ctx.lineWidth = width;
     ctx.stroke();
     ctx.closePath();
-    update_data_URL()
+    update_data_URL();
 }
 
 function color(obj) {
@@ -191,7 +190,7 @@ function clear_canvas() {
 }
 
 function update_data_URL() {
-  canvas_dataURL = canvas.toDataURL();
+//  canvas_dataURL = canvas.toDataURL();
 }
 
 function draw_data_URL(dataURL) {
