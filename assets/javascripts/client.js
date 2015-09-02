@@ -168,7 +168,7 @@ function clear_canvas() {
 }
 
 function update_data_URL() {
-  canvas_dataURL = canvas.toDataURL();
+  //canvas_dataURL = canvas.toDataURL();
 }
 
 function draw_data_URL(dataURL) {
