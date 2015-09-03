@@ -57,18 +57,21 @@ io.on('connection', function(socket) {
         current_stroke[drawer_id][5] = color;
     }
     if (type == 'up') {
+	/*
 	current_stroke[drawer_id][2] = canvasX;
 	current_stroke[drawer_id][3] = canvasY;
         io.emit('draw', {'stroke' : current_stroke[drawer_id]});
 	stroke_history.push(current_stroke[drawer_id]);
+	*/
     }
     if (type == 'move') {
 	current_stroke[drawer_id][2] = canvasX;
 	current_stroke[drawer_id][3] = canvasY;
 	io.emit('draw', {'stroke' : current_stroke[drawer_id]});
-	stroke_history.push(current_stroke[drawer_id]);
+	stroke_history[stroke_history.length] = (current_stroke[drawer_id]).slice(0);
 	current_stroke[drawer_id][0] = current_stroke[drawer_id][2];
-	current_stroke[drawer_id][1] = current_stroke[drawer_id][3];	   }
+	current_stroke[drawer_id][1] = current_stroke[drawer_id][3];
+    }
   });
 
   socket.on('clear', function() {

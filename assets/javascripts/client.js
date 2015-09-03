@@ -13,7 +13,7 @@ socket.on('connection_id', function(connection_id) {
 // load global canvas and past 20 chats
 socket.on('load', function(params) {
   var stroke_history = params['stroke_history'];
-  for (stroke in stroke_history) {
+  for (var stroke in stroke_history) {
       draw(stroke_history[stroke]);
   }
 
