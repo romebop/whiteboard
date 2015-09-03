@@ -39,6 +39,7 @@ io.on('connection', function(socket) {
   // receive a client emission, save canvas state, & emit to all clients
   socket.on('draw', function(params) {
     canvas_dataURL = params['canvas_dataURL'];
+    // emit to everyone except sender via broadcast
     socket.broadcast.emit('draw', params);
   });
 
