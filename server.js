@@ -43,7 +43,6 @@ io.on('connection', function(socket) {
 
   // receive a client emission, save canvas state, & emit to all clients
   socket.on('draw', function(params) {
-    canvas_dataURL = params['canvas_dataURL'];
     var drawer_id  = params['id'];
     var type       = params['type'];
     var canvasX    = params['canvasX'];
@@ -67,11 +66,12 @@ io.on('connection', function(socket) {
     if (type == 'move') {
 	current_stroke[drawer_id][2] = canvasX;
 	current_stroke[drawer_id][3] = canvasY;
-	io.emit('draw', {'stroke' : current_stroke[drawer_id]});
+	socket.broadcast.emit('draw', {'stroke' : current_stroke[drawer_id]});
 	stroke_history[stroke_history.length] = (current_stroke[drawer_id]).slice(0);
 	current_stroke[drawer_id][0] = current_stroke[drawer_id][2];
 	current_stroke[drawer_id][1] = current_stroke[drawer_id][3];
     }
+
   });
 
   socket.on('clear', function() {
