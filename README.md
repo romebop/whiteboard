@@ -1,4 +1,6 @@
-# whiteboard
+whiteboard
+----------
+http://wifinder1.herokuapp.com/
 
 * install node
 * npm install -d
