@@ -12,6 +12,9 @@ var current_chat_color = 0;
 var chat_history = [];     // used to store the last 20 messages
 var chat_history_current  = 0;   // used to organize the chathistory
 
+var stroke_history = [];
+var current_stroke = [];
+
 app.use(favicon(__dirname + '/assets/images/favicon.ico'));
 
 app.set('port', (process.env.PORT || 3000));
@@ -31,19 +34,46 @@ io.on('connection', function(socket) {
   console.log("a connection has been made. id: " + connection_id);
   // assign id to client
   socket.emit('connection_id', connection_id);
+  // prevX, prevY, currX, currY, width, color
+  current_stroke[connection_id] = [0,0,0,0,0,''];
   connection_id++;
 
   // emit canvas state for client to load
-  socket.emit('load', { 'canvas_dataURL': canvas_dataURL, 'chat_history' : chat_history } );
+  socket.emit('load', { 'stroke_history' : stroke_history, 'chat_history' : chat_history } );
 
   // receive a client emission, save canvas state, & emit to all clients
   socket.on('draw', function(params) {
     canvas_dataURL = params['canvas_dataURL'];
-    io.emit('draw', params);
+    var drawer_id  = params['id'];
+    var type       = params['type'];
+    var canvasX    = params['canvasX'];
+    var canvasY    = params['canvasY'];
+    var color      = params['color'];
+    var width      = params['width'];
+    if (type == 'down') {
+	current_stroke[drawer_id][0] = canvasX;
+	current_stroke[drawer_id][1] = canvasY;
+        current_stroke[drawer_id][4] = width;
+        current_stroke[drawer_id][5] = color;
+    }
+    if (type == 'up') {
+	current_stroke[drawer_id][2] = canvasX;
+	current_stroke[drawer_id][3] = canvasY;
+        io.emit('draw', {'stroke' : current_stroke[drawer_id]});
+	stroke_history.push(current_stroke[drawer_id]);
+    }
+    if (type == 'move') {
+	current_stroke[drawer_id][2] = canvasX;
+	current_stroke[drawer_id][3] = canvasY;
+	io.emit('draw', {'stroke' : current_stroke[drawer_id]});
+	stroke_history.push(current_stroke[drawer_id]);
+	current_stroke[drawer_id][0] = current_stroke[drawer_id][2];
+	current_stroke[drawer_id][1] = current_stroke[drawer_id][3];	   }
   });
 
   socket.on('clear', function() {
     canvas_dataURL = null;
+    stroke_history = [];
     io.emit('clear');
   });
 

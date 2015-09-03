@@ -12,9 +12,10 @@ socket.on('connection_id', function(connection_id) {
 
 // load global canvas and past 20 chats
 socket.on('load', function(params) {
-  canvas_dataURL = params['canvas_dataURL'];
-  if (canvas_dataURL == null) ctx.clearRect(0, 0, canvas.width, canvas.height);
-  else draw_data_URL(canvas_dataURL);
+  var stroke_history = params['stroke_history'];
+  for (stroke in stroke_history) {
+      draw(stroke_history[stroke]);
+  }
 
   var chat_history = params['chat_history'];
 
@@ -26,12 +27,15 @@ socket.on('load', function(params) {
 
 // receive io emissions from server
 socket.on('draw', function(params) {
+/*
   var type = params['type'];
   var clientX = params['clientX'];
   var clientY = params['clientY'];
   var color = params['color'];
   var width = params['width'];
   findxy(type, clientX, clientY, color, width);
+*/
+  draw(params['stroke']);
 });
 
 socket.on('clear', function() {
@@ -91,13 +95,15 @@ function init_canvas() {
 
     // emit client input to server
     canvas.addEventListener('mousemove', function (e) {
-        emit_mouse('move', e);
+        if (flag) emit_mouse('move', e);
     }, false);
     canvas.addEventListener('mousedown', function (e) {
+	flag = true;
         emit_mouse('down', e);
     }, false);
     canvas.addEventListener('mouseup', function (e) {
         emit_mouse('up', e);
+	flag = false;
     }, false);
     canvas.addEventListener('mouseout', function (e) {
         emit_mouse('out', e);
@@ -105,7 +111,7 @@ function init_canvas() {
 }
 
 function emit_mouse(type, e) {
-  socket.emit( 'draw', { 'type': type, 'clientX': e.clientX, 'clientY': e.clientY, 'color': myColor, 'width': myWidth, 'canvas_dataURL': canvas_dataURL } )
+  socket.emit( 'draw', { 'type': type, 'clientX': e.clientX, 'clientY': e.clientY, 'color': myColor, 'width': myWidth, 'canvas_dataURL': canvas_dataURL , 'id' : myId , 'canvasX' : e.clientX - canvas.offsetLeft , 'canvasY' : e.clientY - canvas.offsetTop} )
 }
 
 function findxy(res, clientX, clientY, color, width) {
@@ -139,6 +145,7 @@ function findxy(res, clientX, clientY, color, width) {
     }
 }
 
+/*
 function draw(color, width) {
     ctx.beginPath();
     ctx.moveTo(prevX, prevY);
@@ -148,6 +155,17 @@ function draw(color, width) {
     ctx.stroke();
     ctx.closePath();
     update_data_URL()
+}
+*/
+
+function draw(stroke) {
+    ctx.beginPath();
+    ctx.moveTo(stroke[0], stroke[1]);
+    ctx.lineTo(stroke[2], stroke[3]);
+    ctx.strokeStyle = stroke[5];
+    ctx.lineWidth = stroke[4];
+    ctx.stroke();
+    ctx.closePath();
 }
 
 function color(obj) {
