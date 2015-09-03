@@ -91,17 +91,21 @@ function init_canvas() {
 
     // emit client input to server
     canvas.addEventListener('mousemove', function (e) {
+        findxy('move', e.clientX, e.clientY, myColor, myWidth);
         emit_mouse('move', e);
-    }, false);
+      }, false);
     canvas.addEventListener('mousedown', function (e) {
+        findxy('down', e.clientX, e.clientY, myColor, myWidth);
         emit_mouse('down', e);
-    }, false);
+      }, false);
     canvas.addEventListener('mouseup', function (e) {
+        findxy('up', e.clientX, e.clientY, myColor, myWidth);
         emit_mouse('up', e);
-    }, false);
+      }, false);
     canvas.addEventListener('mouseout', function (e) {
+        findxy('out', e.clientX, e.clientY, myColor, myWidth);
         emit_mouse('out', e);
-    }, false);
+      }, false);
 }
 
 function emit_mouse(type, e) {
@@ -168,7 +172,7 @@ function clear_canvas() {
 }
 
 function update_data_URL() {
-  //canvas_dataURL = canvas.toDataURL();
+  canvas_dataURL = canvas.toDataURL();
 }
 
 function draw_data_URL(dataURL) {
