@@ -106,10 +106,7 @@ var canvas,
 function init_canvas() {
     canvas = document.getElementById('whiteboard');
     ctx = canvas.getContext('2d');
-     
 
-    w = canvas.width;
-    h = canvas.height;
 
     // emit client input to server
     canvas.addEventListener('mousemove', function (e) {
