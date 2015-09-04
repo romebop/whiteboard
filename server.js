@@ -38,9 +38,9 @@ io.on('connection', function(socket) {
   // initialize client
   socket.emit('load', { 'connection_id': connection_id, 'stroke_history' : stroke_history, 'chat_history' : chat_history });
   connection_id++;
+  
   // prevX, prevY, currX, currY, width, color
   current_stroke[connection_id] = [0,0,0,0,0,''];
-
   // receive a client emission, save canvas state, & emit to all clients
   socket.on('draw', function(params) {
     var drawer_id = params['id'];
@@ -58,12 +58,12 @@ io.on('connection', function(socket) {
       current_stroke[drawer_id][5] = color;
 	    socket.broadcast.emit('draw', {'stroke' : current_stroke[drawer_id]});
     } else if (type == 'move') {
+      current_stroke[drawer_id][0] = current_stroke[drawer_id][2];
+      current_stroke[drawer_id][1] = current_stroke[drawer_id][3];
     	current_stroke[drawer_id][2] = canvasX;
     	current_stroke[drawer_id][3] = canvasY;
     	socket.broadcast.emit('draw', {'stroke' : current_stroke[drawer_id]});
     	stroke_history[stroke_history.length] = (current_stroke[drawer_id]).slice(0);
-    	current_stroke[drawer_id][0] = current_stroke[drawer_id][2];
-    	current_stroke[drawer_id][1] = current_stroke[drawer_id][3];
     }
   });
 
