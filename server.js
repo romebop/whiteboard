@@ -37,10 +37,9 @@ io.on('connection', function(socket) {
 
   // initialize client
   socket.emit('load', { 'connection_id': connection_id, 'stroke_history' : stroke_history, 'chat_history' : chat_history });
-  connection_id++;
-  
   // prevX, prevY, currX, currY, width, color
   current_stroke[connection_id] = [0,0,0,0,0,''];
+  connection_id++;
   // receive a client emission, save canvas state, & emit to all clients
   socket.on('draw', function(params) {
     var drawer_id = params['id'];
