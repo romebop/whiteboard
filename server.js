@@ -21,15 +21,14 @@ http.listen(app.get('port'), function() {
 
 /* server side socket */
 
-var connection_id = 1;
-var last_messenger_id = -1;
-var chat_colors = ['white-msg','cloud-msg'];
-var current_chat_color = 0;
-var chat_history = [];
-var chat_history_current = 0;
-
-var stroke_history = [];
-var current_stroke = [];
+var connection_id = 1,
+  last_messenger_id = -1,
+  chat_colors = ['white-msg','cloud-msg'],
+  current_chat_color = 0,
+  chat_history = [],
+  chat_history_current = 0,
+  stroke_history = [],
+  current_stroke = [];
 
 io.on('connection', function(socket) {
   
@@ -49,20 +48,20 @@ io.on('connection', function(socket) {
     var width     = params['width'];
     var color     = params['color'];
     if (type == 'down') {
-    	current_stroke[drawer_id][0] = canvasX;
-    	current_stroke[drawer_id][1] = canvasY;
-    	current_stroke[drawer_id][2] = canvasX;
-    	current_stroke[drawer_id][3] = canvasY;	
+      current_stroke[drawer_id][0] = canvasX;
+      current_stroke[drawer_id][1] = canvasY;
+      current_stroke[drawer_id][2] = canvasX;
+      current_stroke[drawer_id][3] = canvasY; 
       current_stroke[drawer_id][4] = width;
       current_stroke[drawer_id][5] = color;
-	    socket.broadcast.emit('draw', {'stroke' : current_stroke[drawer_id]});
+      socket.broadcast.emit('draw', {'stroke' : current_stroke[drawer_id]});
     } else if (type == 'move') {
       current_stroke[drawer_id][0] = current_stroke[drawer_id][2];
       current_stroke[drawer_id][1] = current_stroke[drawer_id][3];
-    	current_stroke[drawer_id][2] = canvasX;
-    	current_stroke[drawer_id][3] = canvasY;
-    	socket.broadcast.emit('draw', {'stroke' : current_stroke[drawer_id]});
-    	stroke_history[stroke_history.length] = (current_stroke[drawer_id]).slice(0);
+      current_stroke[drawer_id][2] = canvasX;
+      current_stroke[drawer_id][3] = canvasY;
+      socket.broadcast.emit('draw', {'stroke' : current_stroke[drawer_id]});
+      stroke_history[stroke_history.length] = (current_stroke[drawer_id]).slice(0);
     }
   });
 
