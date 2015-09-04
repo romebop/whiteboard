@@ -27,14 +27,6 @@ socket.on('load', function(params) {
 
 // receive io emissions from server
 socket.on('draw', function(params) {
-/*
-  var type = params['type'];
-  var clientX = params['clientX'];
-  var clientY = params['clientY'];
-  var color = params['color'];
-  var width = params['width'];
-  findxy(type, clientX, clientY, color, width);
-*/
   draw_stroke(params['stroke']);
 });
 
@@ -75,7 +67,6 @@ $('#chatform').submit(function() {
 // global variables
 var canvas,
   ctx,
-  canvas_dataURL,
   flag = false, 
   prevX = 0, 
   currX = 0, 
@@ -88,9 +79,6 @@ var canvas,
 function init_canvas() {
     canvas = document.getElementById('whiteboard');
     ctx = canvas.getContext('2d');
-
-    w = canvas.width;
-    h = canvas.height;
 
     // emit client input to server
     canvas.addEventListener('mousemove', function (e) {
@@ -114,7 +102,7 @@ function init_canvas() {
 }
 
 function emit_mouse(type, e) {
-  socket.emit( 'draw', { 'type': type, 'clientX': e.clientX, 'clientY': e.clientY, 'color': myColor, 'width': myWidth, 'canvas_dataURL': canvas_dataURL , 'id' : myId , 'canvasX' : e.clientX - canvas.offsetLeft , 'canvasY' : e.clientY - canvas.offsetTop} )
+  socket.emit( 'draw', { 'type': type, 'color': myColor, 'width': myWidth, 'id' : myId , 'canvasX' : e.clientX - canvas.offsetLeft , 'canvasY' : e.clientY - canvas.offsetTop} )
 }
 
 function findxy(res, clientX, clientY, color, width) {
@@ -161,11 +149,17 @@ function draw(color, width) {
 
 function draw_stroke(stroke) {
     ctx.beginPath();
-    ctx.moveTo(stroke[0], stroke[1]);
-    ctx.lineTo(stroke[2], stroke[3]);
-    ctx.strokeStyle = stroke[5];
-    ctx.lineWidth = stroke[4];
-    ctx.stroke();
+    if ((stroke[0] == stroke[2]) && (stroke[1] == stroke[3])) {
+	ctx.fillStyle = stroke[5];
+        ctx.fillRect(stroke[0], stroke[1], 2, 2);
+    }
+    else {
+        ctx.moveTo(stroke[0], stroke[1]);
+        ctx.lineTo(stroke[2], stroke[3]);
+        ctx.strokeStyle = stroke[5];
+        ctx.lineWidth = stroke[4];
+        ctx.stroke();
+    }
     ctx.closePath();
 }
 
@@ -184,16 +178,6 @@ function clear_canvas() {
   if (confirm("clear whiteboard?")) {
     socket.emit( 'clear');
   }
-}
-
-function update_data_URL() {
-  canvas_dataURL = canvas.toDataURL();
-}
-
-function draw_data_URL(dataURL) {
-  var canvas_img = new Image();
-  canvas_img.src = dataURL;
-  ctx.drawImage(canvas_img, 0, 0);
 }
 
 function grid_mode() {

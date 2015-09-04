@@ -5,7 +5,6 @@ var io = require('socket.io')(http);
 var favicon = require('serve-favicon');
 
 var connection_id = 1;
-var canvas_dataURL; // dataURL representation of global canvas
 var last_messenger_id = -1;
 var chat_colors = ['white-msg','cloud-msg'];
 var current_chat_color = 0;
@@ -52,16 +51,11 @@ io.on('connection', function(socket) {
     if (type == 'down') {
 	current_stroke[drawer_id][0] = canvasX;
 	current_stroke[drawer_id][1] = canvasY;
+	current_stroke[drawer_id][2] = canvasX;
+	current_stroke[drawer_id][3] = canvasY;	
         current_stroke[drawer_id][4] = width;
         current_stroke[drawer_id][5] = color;
-    }
-    if (type == 'up') {
-	/*
-	current_stroke[drawer_id][2] = canvasX;
-	current_stroke[drawer_id][3] = canvasY;
-        io.emit('draw', {'stroke' : current_stroke[drawer_id]});
-	stroke_history.push(current_stroke[drawer_id]);
-	*/
+	socket.broadcast.emit('draw', {'stroke' : current_stroke[drawer_id]});
     }
     if (type == 'move') {
 	current_stroke[drawer_id][2] = canvasX;
@@ -75,7 +69,6 @@ io.on('connection', function(socket) {
   });
 
   socket.on('clear', function() {
-    canvas_dataURL = null;
     stroke_history = [];
     io.emit('clear');
   });
