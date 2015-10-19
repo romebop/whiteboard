@@ -23,8 +23,7 @@ http.listen(app.get('port'), function() {
 
 /* mongodb */
 
-//var url = 'mongodb://localhost:27017/whiteboard';
-var url = 'mongodb://rome_bop:boris_sama@ds037814.mongolab.com:37814/heroku_1cjc54ck';
+var url = 'mongodb://<dbusername>:<dbpassword>@ds037814.mongolab.com:37814/heroku_1cjc54ck';
 
 var loadFromDB = function() {
   MongoClient.connect(url, function(err, db) {
