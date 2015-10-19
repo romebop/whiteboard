@@ -42,14 +42,10 @@ var loadFromDB = function() {
 
       else if (doc.type == 'chat') {
         chat_history = doc.log;
-        console.log('hayy');
-        console.log(chat_history);
       }
 
       else if (doc.type == 'stroke') {
         stroke_history = doc.log;
-        console.log('hoo');
-        console.log(stroke_history);
       }
 
     });
