@@ -23,18 +23,36 @@ http.listen(app.get('port'), function() {
 
 /* mongodb */
 
-var url = 'mongodb://rome_bop:boris_sama@ds037814.mongolab.com:37814/heroku_1cjc54ck';
+var url = 'mongodb://localhost:27017/whiteboard';
+//var url = 'mongodb://rome_bop:boris_sama@ds037814.mongolab.com:37814/heroku_1cjc54ck';
 
 var loadFromDB = function() {
   MongoClient.connect(url, function(err, db) {
     assert.equal(null, err);
     console.log('Connected to MongoDB to load history.');
-    var col = db.collection('history');
-    col.find({}).toArray(function(err, docs) {
+    
+    var cursor = db.collection('history').find();
+
+    cursor.each(function(err, doc) {
       assert.equal(null, err);
-      chat_history = docs[0].log;
-      stroke_history = docs[1].log;
-      db.close();
+
+      if (!doc) {
+        db.close();
+        console.log('we closed');
+      }
+
+      else if (doc.type == 'chat') {
+        chat_history = doc.log;
+        console.log('hayy');
+        console.log(chat_history);
+      }
+
+      else if (doc.type == 'stroke') {
+        stroke_history = doc.log;
+        console.log('hoo');
+        console.log(stroke_history);
+      }
+
     });
   });
 }
