@@ -13,3 +13,6 @@ Express
 
 Socket.IO
 > http://socket.io
+
+MongoDB Node Driver
+> http://mongodb.github.io/node-mongodb-native/2.0/

@@ -5,6 +5,8 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var favicon = require('serve-favicon');
+var MongoClient = require('mongodb').MongoClient, 
+  assert = require('assert');
 
 app.use(favicon(__dirname + '/assets/images/favicon.ico'));
 
@@ -19,16 +21,63 @@ http.listen(app.get('port'), function() {
   console.log('Server running on localhost:' + app.get('port'));
 });
 
+/* mongodb */
+
+var url = 'mongodb://<dbuser>:<dbpassword>@ds037814.mongolab.com:37814/heroku_1cjc54ck';
+
+var loadFromDB = function() {
+  MongoClient.connect(url, function(err, db) {
+    assert.equal(null, err);
+    console.log('Connected to MongoDB to load history.');
+    var col = db.collection('history');
+    col.find({}).toArray(function(err, docs) {
+      assert.equal(null, err);
+      chat_history = docs[0].log;
+      stroke_history = docs[1].log;
+      db.close();
+    });
+  });
+}
+
+var updateDB = function() {
+  MongoClient.connect(url, function(err, db) {
+    assert.equal(null, err);
+    console.log('Connected to MongoDB to update history.');
+    var col = db.collection('history');
+
+    col.update({ type : 'chat' }
+      , { $set: { log : chat_history } }, function(err, result) {
+        assert.equal(err, null);
+        console.log('chat_history update successful');
+
+        col.update({ type : 'stroke' }
+          , { $set: { log : stroke_history } }, function(err, result) {
+            assert.equal(err, null);
+            console.log('stroke_history update successful');
+            
+            db.close();
+            console.log('disconnected from mongoDB');
+          }
+        );
+
+      }
+    );
+
+  });
+}
+
 /* server side socket */
 
 var connection_id = 1,
   last_messenger_id = -1,
   chat_colors = ['white-msg','cloud-msg'],
   current_chat_color = 0,
-  chat_history = [],
-  chat_history_current = 0,
-  stroke_history = [],
   current_stroke = [];
+
+var stroke_history,
+  chat_history;
+
+loadFromDB(); // load in DB stroke and chat histories
 
 io.on('connection', function(socket) {
   
@@ -63,10 +112,14 @@ io.on('connection', function(socket) {
       socket.broadcast.emit('draw', {'stroke' : current_stroke[drawer_id]});
       stroke_history[stroke_history.length] = (current_stroke[drawer_id]).slice(0);
     }
+    updateDB();
   });
 
   socket.on('clear', function() {
     stroke_history = [];
+
+    updateDB();
+    
     io.emit('clear');
   });
 
@@ -76,6 +129,9 @@ io.on('connection', function(socket) {
     var handle = params['handle'];
     var msg_obj = make_msg_obj(color, handle, msg);
     update_chat_history(msg_obj);
+
+    updateDB();
+
     io.emit('chat message', msg_obj);
   });
 
