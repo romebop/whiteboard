@@ -7,6 +7,7 @@ var io = require('socket.io')(http);
 var favicon = require('serve-favicon');
 var MongoClient = require('mongodb').MongoClient, 
   assert = require('assert');
+var fs = require('fs');
 
 app.use(favicon(__dirname + '/assets/images/favicon.ico'));
 
@@ -23,7 +24,10 @@ http.listen(app.get('port'), function() {
 
 /* mongodb */
 
-var url = 'mongodb://rome_bop:boris_sama@ds037814.mongolab.com:37814/heroku_1cjc54ck';
+var cfg = JSON.parse(fs.readFileSync('config.json', 'utf8'));
+
+//var url = 'mongodb://localhost:27017/whiteboard';
+var url = 'mongodb://' + cfg.db_username + ':' + cfg.db_password + '@ds037814.mongolab.com:37814/heroku_1cjc54ck';
 
 var loadFromDB = function() {
   MongoClient.connect(url, function(err, db) {
@@ -37,7 +41,6 @@ var loadFromDB = function() {
 
       if (!doc) {
         db.close();
-        console.log('we closed');
       }
 
       else if (doc.type == 'chat') {
@@ -69,7 +72,6 @@ var updateDB = function() {
             console.log('stroke_history update successful');
             
             db.close();
-            console.log('disconnected from mongoDB');
           }
         );
 
@@ -85,7 +87,8 @@ var connection_id = 1,
   last_messenger_id = -1,
   chat_colors = ['white-msg','cloud-msg'],
   current_chat_color = 0,
-  current_stroke = [];
+  current_stroke = [],
+  total_connections = 0;
 
 var stroke_history,
   chat_history;
@@ -94,6 +97,7 @@ loadFromDB(); // load in DB stroke and chat histories
 
 io.on('connection', function(socket) {
   
+  total_connections++;
   console.log("a connection has been made. id: " + connection_id);
 
   // initialize client
@@ -125,13 +129,10 @@ io.on('connection', function(socket) {
       socket.broadcast.emit('draw', {'stroke' : current_stroke[drawer_id]});
       stroke_history[stroke_history.length] = (current_stroke[drawer_id]).slice(0);
     }
-    updateDB();
   });
 
   socket.on('clear', function() {
     stroke_history = [];
-
-    updateDB();
     
     io.emit('clear');
   });
@@ -143,12 +144,16 @@ io.on('connection', function(socket) {
     var msg_obj = make_msg_obj(color, handle, msg);
     update_chat_history(msg_obj);
 
-    updateDB();
-
     io.emit('chat message', msg_obj);
   });
 
-  socket.on('disconnect', function(){
+  socket.on('disconnect', function() {
+    total_connections--;
+    var is_negative = total_connections < 0;
+    assert.equal(is_negative, false);
+    if (total_connections == 0) {
+      updateDB(); // store chat and stroke histories into database
+    }
     console.log('a user has disconnected.');
   });
 
