@@ -17,7 +17,10 @@ socket.on('load', function(params) {
   var chat_history = params['chat_history'];
   for (i = 0; i < chat_history.length; i++) {
     write_chat( chat_history[i] );
-  } 
+  }
+
+  var user_count = params['user_count'];
+  update_count(user_count);
 });
 
 socket.on('draw', function(params) {
@@ -30,6 +33,10 @@ socket.on('clear', function() {
 
 socket.on('chat message', function(msg_obj) {
   write_chat(msg_obj);
+});
+
+socket.on('count', function(user_count) {
+  update_count(user_count);
 });
 
 /* whiteboard drawing behavior */
@@ -70,12 +77,12 @@ function init_canvas() {
 }
 
 function update_xy(e){
-  if (e.type == 'mousedown') {
+  if (e.type === 'mousedown') {
     prevX = e.clientX - canvas.offsetLeft;
     prevY = e.clientY - canvas.offsetTop;
     currX = e.clientX - canvas.offsetLeft;
     currY = e.clientY - canvas.offsetTop;
-  } else if (e.type == 'mousemove') {
+  } else if (e.type === 'mousemove') {
     prevX = currX;
     prevY = currY;
     currX = e.clientX - canvas.offsetLeft;
@@ -89,7 +96,7 @@ function emit_mouse(type, e) {
 
 function draw(stroke) {
   ctx.beginPath();
-  if ((stroke[0] == stroke[2]) && (stroke[1] == stroke[3])) {
+  if ((stroke[0] === stroke[2]) && (stroke[1] === stroke[3])) {
     ctx.fillStyle = stroke[5];
     ctx.fillRect(stroke[0], stroke[1], 2, 2);
   } else {
@@ -104,26 +111,18 @@ function draw(stroke) {
 
 function color(obj) {
   myColor = obj.id;
-  if (myColor == 'white') {
-    myWidth = 14;
-    $('.indicator').attr('id', null);
-  } else {
-    myWidth = 2;
-    $('.indicator').attr('id', 'on' + myColor);
-  }
+  myWidth = 2;
+  $('.indicator').attr('id', 'on' + myColor);
+}
+
+function erase() {
+  myColor = 'white';
+  myWidth = 14;
 }
 
 function clear_canvas() {
-  if (confirm("clear whiteboard?")) {
-    socket.emit( 'clear');
-  }
-}
-
-function grid_mode() {
-  if ( $('#whiteboard').hasClass('gridMode')) {
-    $('#whiteboard').removeClass('gridMode');
-  } else {
-    $('#whiteboard').addClass('gridMode');
+  if (confirm('Clear Whiteboard?')) {
+    socket.emit('clear');
   }
 }
 
@@ -134,7 +133,7 @@ $(function() {
 });
 
 $('#handleform').submit(function() {
-  if (!( $('#h').val() == '') ) {
+  if (!( $('#h').val() === '') ) {
     myHandle = $('#h').val();
   }
   $('#handlebox').addClass('hide');
@@ -143,7 +142,7 @@ $('#handleform').submit(function() {
   $(function() {
     $("#m").focus();
   });
-  return false;
+  return false; // cancel submit action
 });
 
 $('#chatform').submit(function() {
@@ -156,6 +155,10 @@ function write_chat(msg_obj) {
   var msg = msg_obj.sub_string_1 + display_time(msg_obj.date_ms) + msg_obj.sub_string_2;
   $('#messages').append($(msg));
   $('#messages').scrollTop( $('#messages')[0].scrollHeight );
+}
+
+function update_count(n) {
+  $('#count').text(n);
 }
 
 function display_time(date_ms) {

@@ -84,11 +84,10 @@ var updateDB = function() {
 /* server side socket */
 
 var connection_id = 1,
-  last_messenger_id = -1,
-  chat_colors = ['white-msg','cloud-msg'],
-  current_chat_color = 0,
   current_stroke = [],
   total_connections = 0;
+
+var colors = ["green", "blue", "red", "black", "orange"];
 
 var stroke_history,
   chat_history;
@@ -99,9 +98,15 @@ io.on('connection', function(socket) {
   
   total_connections++;
   console.log("a connection has been made. id: " + connection_id);
+  socket.broadcast.emit('count', total_connections);
 
   // initialize client
-  socket.emit('load', { 'connection_id': connection_id, 'stroke_history' : stroke_history, 'chat_history' : chat_history });
+  socket.emit('load', { 
+    'connection_id': connection_id, 
+    'stroke_history': stroke_history, 
+    'chat_history': chat_history,
+    'user_count': total_connections, 
+  });
   // prevX, prevY, currX, currY, width, color
   current_stroke[connection_id] = [0,0,0,0,0,''];
   connection_id++;
@@ -138,10 +143,11 @@ io.on('connection', function(socket) {
   });
 
   socket.on('chat message', function(params) {
-    var color = get_chat_color(params['connection_id']);
     var msg = params['msg'];
     var handle = params['handle'];
-    var msg_obj = make_msg_obj(color, handle, msg);
+    var colorIndex = Math.abs(handle.hashCode() % 5);
+    var color = colors[colorIndex];
+    var msg_obj = make_msg_obj(handle, msg, color);
     update_chat_history(msg_obj);
 
     io.emit('chat message', msg_obj);
@@ -151,6 +157,7 @@ io.on('connection', function(socket) {
     total_connections--;
     var is_negative = total_connections < 0;
     assert.equal(is_negative, false);
+    io.emit('count', total_connections);
     if (total_connections == 0) {
       updateDB(); // store chat and stroke histories into database
     }
@@ -161,19 +168,10 @@ io.on('connection', function(socket) {
 
 /* helper functions */
 
-function get_chat_color(next_messenger_id) {
-  // assign message color & change color if new sender
-  if (last_messenger_id != next_messenger_id) {
-    current_chat_color = (current_chat_color+1)%2;
-  }
-  last_messenger_id = next_messenger_id;
-  return chat_colors[current_chat_color];
-}
-
-function make_msg_obj(color, handle, msg) {
-  var sub_string_1 = '<li class="' + color + '"> <p id="time">[';
+function make_msg_obj(handle, msg, color) {
+  var sub_string_1 = '<li> <p id="time">[';
   var date_ms = Date.now();
-  var sub_string_2 = ']</p> <b>' + handle + '</b>: ' + msg + '</li>';
+  var sub_string_2 = ']</p> <b class="' + color + '">' + handle + '</b>: ' + msg + '</li>';
   // array of string + date object + string
   return { 'sub_string_1': sub_string_1, 'date_ms': date_ms, 'sub_string_2': sub_string_2 };
 }
@@ -184,3 +182,14 @@ function update_chat_history(msg_obj) {
      chat_history.shift();
   }
 }
+
+String.prototype.hashCode = function() {
+  var hash = 0, i, chr, len;
+  if (this.length === 0) return hash;
+  for (i = 0, len = this.length; i < len; i++) {
+    chr   = this.charCodeAt(i);
+    hash  = ((hash << 5) - hash) + chr;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return hash;
+};

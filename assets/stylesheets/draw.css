@@ -1,0 +1,106 @@
+#draw-container {
+  width: 62%;
+  height: 100%;
+
+  position: absolute;
+  left: 0px;
+
+  overflow: hidden;
+}
+
+#whiteboard {
+  background: #fff;
+  position: absolute;
+  top: calc(50% - 250px);
+  right: 0px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
+}
+
+#whiteboard:hover{
+  cursor: crosshair;
+}
+
+#draw-title {
+  position: absolute;
+  top: calc(50% - 270px);
+  right: 620px;
+  color: white;
+  font-size: 220%;
+}
+
+.grabbable:hover {
+  cursor: -webkit-grab;
+}
+
+.grabbable:hover:active {
+  cursor: -webkit-grabbing;
+}
+
+#colors {
+  position: absolute;
+  top: calc(50% - 290px);
+  right: 468px;
+}
+
+.color {
+  display: inline-block;
+  border-radius: 2px;
+  margin-right: 5px;
+  width: 30px;
+  height: 30px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
+}
+
+#black {
+  background: black;
+}
+
+#green {
+  background: green;
+}
+
+#blue {
+  background: blue;
+}
+
+#red {
+  background: red;
+}
+
+#yellow {
+  background: yellow;
+}
+
+#orange {
+  background: orange;
+}
+
+#options {
+  position: absolute;
+  top: calc(50% - 287px);
+  right: 0px;
+}
+
+#eraser {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  fill: #2C3E50;
+}
+
+#clear {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  margin-left: 5px;
+  fill: #2C3E50;
+}
+
+#online {
+  position: absolute;
+  top: calc(50% + 246px);
+  right: 5px;
+  color: #a9a9a9;
+}
