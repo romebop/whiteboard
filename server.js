@@ -27,7 +27,8 @@ http.listen(app.get('port'), function() {
 var cfg = JSON.parse(fs.readFileSync('config.json', 'utf8'));
 
 //var url = 'mongodb://localhost:27017/whiteboard';
-var url = 'mongodb://' + cfg.db_username + ':' + cfg.db_password + '@ds037814.mongolab.com:37814/heroku_1cjc54ck';
+//var url = 'mongodb://' + cfg.db_username + ':' + cfg.db_password + '@ds037814.mongolab.com:37814/heroku_1cjc54ck';
+var url = 'mongodb://' + process.env.db_username + ':' + process.env.db_password + '@ds037814.mongolab.com:37814/heroku_1cjc54ck';
 
 var loadFromDB = function() {
   MongoClient.connect(url, function(err, db) {
