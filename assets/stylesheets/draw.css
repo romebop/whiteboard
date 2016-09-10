@@ -40,7 +40,8 @@
 #colors {
   position: absolute;
   top: calc(50% - 290px);
-  right: 468px;
+  right: 467px;
+  width: 233px;
 }
 
 .color {
@@ -101,6 +102,6 @@
 #online {
   position: absolute;
   top: calc(50% + 246px);
-  right: 5px;
+  right: 10px;
   color: #a9a9a9;
 }
