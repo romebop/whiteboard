@@ -39,6 +39,8 @@
 #time {
   display: inline;
   font-size: 90%;
+  position: relative;
+  bottom: 1px;
 }
 
 #chatform {

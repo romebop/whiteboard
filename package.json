@@ -4,10 +4,12 @@
   "description": "socket.io whiteboard app",
   "main": "server.js",
   "dependencies": {
+    "async": "^2.0.1",
     "express": "^4.13.3",
+    "mongodb": "~2.0",
     "path": "^0.11.14",
     "serve-favicon": "^2.3.0",
     "socket.io": "^1.3.6",
-    "mongodb": "~2.0"
+    "string-hash": "^1.1.0"
   }
 }

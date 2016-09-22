@@ -1,4 +1,4 @@
-whiteboard
+Whiteboard
 ----------
 
 * install node

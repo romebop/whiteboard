@@ -1,45 +1,36 @@
-/* client side socket */
+// client side socket
 
 var socket = io(),
-  myId, 
-  myHandle;
+  id, 
+  handle
+  ;
 
-socket.on('load', function(params) {
-  // assign id and default handle
-  myId = params['connection_id'];
-  myHandle = "Client " + myId;
-  // load global canvas
-  var stroke_history = params['stroke_history'];
-  for (var stroke in stroke_history) {
-    draw(stroke_history[stroke]);
-  }
-  // load past 20 chats
-  var chat_history = params['chat_history'];
-  for (i = 0; i < chat_history.length; i++) {
-    write_chat( chat_history[i] );
-  }
-
-  var user_count = params['user_count'];
-  update_count(user_count);
+socket.on('load', function({ connectionId, userCount, strokeHistory, chatHistory }) {
+  id = connectionId;
+  handle = "Client " + id;
+  // load global state: canvas, chat messages, & user count
+  for (var stroke of strokeHistory) draw(stroke);
+  for (var chat of chatHistory) appendMessage(chat);
+  updateCount(userCount);
 });
 
-socket.on('draw', function(params) {
-  draw(params['stroke']);
+socket.on('draw', function({ stroke }) {
+  draw(stroke);
 });
 
 socket.on('clear', function() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 });
 
-socket.on('chat message', function(msg_obj) {
-  write_chat(msg_obj);
+socket.on('chat', function(message) {
+  appendMessage(message);
 });
 
-socket.on('count', function(user_count) {
-  update_count(user_count);
+socket.on('count', function(userCount) {
+  updateCount(userCount);
 });
 
-/* whiteboard drawing behavior */
+// drawing
 
 var canvas,
   ctx,
@@ -48,25 +39,28 @@ var canvas,
   prevY = 0, 
   currX = 0, 
   currY = 0, 
-  myWidth = 2,
-  myColor = 'black'; 
+  width = 2,
+  color = 'black'
+  ; 
 
-function init_canvas() {
+function initCanvas() {
   canvas = document.getElementById('whiteboard');
   ctx = canvas.getContext('2d');
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
   // emit client input to server
   canvas.addEventListener('mousemove', function (e) {
     if (flag) {
-      update_xy(e);
-      draw([prevX, prevY, currX, currY, myWidth, myColor]);
-      emit_mouse('move', e);
+      updateXY(e);
+      draw({ prevX, prevY, currX, currY, width, color });
+      emitMouse('move', e);
     }
   }, false);
   canvas.addEventListener('mousedown', function (e) {
     flag = true;
-    update_xy(e);
-    draw([prevX, prevY, currX, currY, myWidth, myColor]);
-    emit_mouse('down', e);
+    updateXY(e);
+    draw({ prevX, prevY, currX, currY, width, color });
+    emitMouse('down', e);
   }, false);
   canvas.addEventListener('mouseup', function (e) {
     flag = false;
@@ -76,7 +70,7 @@ function init_canvas() {
   }, false);
 }
 
-function update_xy(e){
+function updateXY(e) {
   if (e.type === 'mousedown') {
     prevX = e.clientX - canvas.offsetLeft;
     prevY = e.clientY - canvas.offsetTop;
@@ -90,51 +84,52 @@ function update_xy(e){
   }
 }
 
-function emit_mouse(type, e) {
-  socket.emit( 'draw', { 'type': type, 'color': myColor, 'width': myWidth, 'id' : myId , 'canvasX' : e.clientX - canvas.offsetLeft , 'canvasY' : e.clientY - canvas.offsetTop} )
+function emitMouse(type, e) {
+  socket.emit('draw', { 
+    type, 
+    color, 
+    width, 
+    id, 
+    canvasX: e.clientX - canvas.offsetLeft, 
+    canvasY: e.clientY - canvas.offsetTop,
+  });
 }
 
 function draw(stroke) {
   ctx.beginPath();
-  if ((stroke[0] === stroke[2]) && (stroke[1] === stroke[3])) {
-    ctx.fillStyle = stroke[5];
-    ctx.fillRect(stroke[0], stroke[1], 2, 2);
-  } else {
-    ctx.moveTo(stroke[0], stroke[1]);
-    ctx.lineTo(stroke[2], stroke[3]);
-    ctx.strokeStyle = stroke[5];
-    ctx.lineWidth = stroke[4];
-    ctx.stroke();
-  }
+  ctx.moveTo(stroke.prevX, stroke.prevY);
+  ctx.lineTo(stroke.currX, stroke.currY);
+  ctx.lineWidth = stroke.width;
+  ctx.strokeStyle = stroke.color;
+  ctx.stroke();
   ctx.closePath();
 }
 
-function color(obj) {
-  myColor = obj.id;
-  myWidth = 2;
-  $('.indicator').attr('id', 'on' + myColor);
+function chooseColor({ id }) {
+  color = id;
+  width = 2;
 }
 
 function erase() {
-  myColor = 'white';
-  myWidth = 14;
+  color = 'white';
+  width = 14;
 }
 
-function clear_canvas() {
+function clearCanvas() {
   if (confirm('Clear Whiteboard?')) {
     socket.emit('clear');
   }
 }
 
-/* chat messaging behavior */
+// chat
 
 $(function() {
   $("#h").focus();
 });
 
 $('#handleform').submit(function() {
-  if (!( $('#h').val() === '') ) {
-    myHandle = $('#h').val();
+  if ($('#h').val() !== '') {
+    handle = $('#h').val();
   }
   $('#handlebox').addClass('hide');
   $('#chatbox').removeClass('hide');
@@ -146,35 +141,41 @@ $('#handleform').submit(function() {
 });
 
 $('#chatform').submit(function() {
-  socket.emit('chat message', { 'connection_id': myId, 'handle': myHandle, 'msg': $('#m').val() } );
+  socket.emit('chat', { 
+    handle, 
+    'text': $('#m').val() 
+  });
   $('#m').val('');
   return false;
 });
 
-function write_chat(msg_obj) {
-  var msg = msg_obj.sub_string_1 + display_time(msg_obj.date_ms) + msg_obj.sub_string_2;
-  $('#messages').append($(msg));
+function appendMessage({ handle, text, color, date }) {
+  var time = displayTime(date);
+  var message = `<li><p id="time">[${time}]</p> <b class="${color}">${handle}</b>: ${text}</li>`;
+  $('#messages').append($(message));
   $('#messages').scrollTop( $('#messages')[0].scrollHeight );
 }
 
-function update_count(n) {
-  $('#count').text(n);
-}
-
-function display_time(date_ms) {
-  var time = new Date(date_ms);
+function displayTime(dateMS) {
+  var time = new Date(dateMS);
   var hours = time.getHours();
   var minutes = time.getMinutes();
   var seconds = time.getSeconds();
-  var am_pm;
+  var meridiem;
   if (minutes < 10) minutes = '0' + minutes;
   if (seconds < 10) seconds = '0' + seconds;
   if (hours >= 12) {
-    am_pm = 'pm';
+    meridiem = 'pm';
     if (hours > 12) hours -= 12;
   } else {
-    am_pm = 'am';
-    if (hours == 0) hours = 12;
+    meridiem = 'am';
+    if (hours === 0) hours = 12;
   }
-  return hours + ':' + minutes + am_pm; // + ':' + seconds + ' ';
+  return hours + ':' + minutes + meridiem; // + ':' + seconds + ' ';
+}
+
+// online user counter
+
+function updateCount(n) {
+  $('#count').text(n);
 }
