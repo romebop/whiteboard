@@ -1,5 +1,6 @@
 var MongoClient = require('mongodb').MongoClient;
-var { mongoURL } = require('./config.js');
+//var { mongoURL } = require('./config.js');
+var url = `mongodb://${process.env.db_username}:${process.env.db_password}@ds037814.mongolab.com:37814/heroku_1cjc54ck`;
 
 var state = {
   db: null,
