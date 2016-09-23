@@ -8,7 +8,7 @@ var state = {
 
 function connect(callback) {
   if (state.db) return callback();
-  MongoClient.connect(mongoURL.local, function(err, db) {
+  MongoClient.connect(url, function(err, db) {
     if (err) return callback(err);
     state.db = db;
     callback(); // error parameter undefined
