@@ -5,7 +5,6 @@ var io         = require('socket.io')(http);
 var favicon    = require('serve-favicon');
 var stringHash = require('string-hash');
 var async      = require('async');
-var bob        = require('./poop');
 
 var db         = require('./db');
 
