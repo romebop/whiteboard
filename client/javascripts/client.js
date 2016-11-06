@@ -1,7 +1,7 @@
 // client side socket
 
 var socket = io(),
-  id, 
+  id,
   handle
   ;
 
@@ -34,14 +34,14 @@ socket.on('count', function(userCount) {
 
 var canvas,
   ctx,
-  flag = false, 
-  prevX = 0, 
-  prevY = 0, 
-  currX = 0, 
-  currY = 0, 
+  flag = false,
+  prevX = 0,
+  prevY = 0,
+  currX = 0,
+  currY = 0,
   width = 2,
   color = 'black'
-  ; 
+  ;
 
 function initCanvas() {
   canvas = document.getElementById('whiteboard');
@@ -85,12 +85,12 @@ function updateXY(e) {
 }
 
 function emitMouse(type, e) {
-  socket.emit('draw', { 
-    type, 
-    color, 
-    width, 
-    id, 
-    canvasX: e.clientX - canvas.offsetLeft, 
+  socket.emit('draw', {
+    type,
+    color,
+    width,
+    id,
+    canvasX: e.clientX - canvas.offsetLeft,
     canvasY: e.clientY - canvas.offsetTop,
   });
 }
@@ -141,9 +141,9 @@ $('#handleform').submit(function() {
 });
 
 $('#chatform').submit(function() {
-  socket.emit('chat', { 
-    handle, 
-    'text': $('#m').val() 
+  socket.emit('chat', {
+    handle,
+    'text': $('#m').val()
   });
   $('#m').val('');
   return false;
@@ -151,7 +151,7 @@ $('#chatform').submit(function() {
 
 function appendMessage({ handle, text, color, date }) {
   var time = displayTime(date);
-  var message = `<li><p id="time">[${time}]</p> <b class="${color}">${handle}</b>: ${text}</li>`;
+  var message = `<li><p id="time">${time}</p> <b class="${color}">${handle}</b>: ${text}</li>`;
   $('#messages').append($(message));
   $('#messages').scrollTop( $('#messages')[0].scrollHeight );
 }

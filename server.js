@@ -12,10 +12,10 @@ var async = require('async');
 
 var db = require('./db');
 
-app.use(favicon(__dirname + '/assets/images/favicon.ico'));
+app.use(favicon(__dirname + '/client/images/favicon.ico'));
 
 app.set('port', process.env.PORT || 3000);
-app.use(express.static(__dirname + '/assets'));
+app.use(express.static(__dirname + '/client'));
 
 app.get('/', function (req, res) {
   res.sendFile(__dirname + '/index.html');
@@ -43,7 +43,7 @@ totalConnections = 0;
 io.on('connection', function (socket) {
 
   totalConnections++;
-  console.log('A connection has been made! ID: ' + connectionId);
+  console.log('connection made. ID: ' + connectionId);
   socket.broadcast.emit('count', totalConnections);
 
   // initialize client
@@ -75,8 +75,9 @@ io.on('connection', function (socket) {
     var canvasY = _ref.canvasY;
 
     var prevStroke = strokeById[id];
+    var currStroke = void 0;
     if (type === 'down') {
-      var currStroke = {
+      currStroke = {
         prevX: canvasX,
         prevY: canvasY,
         currX: canvasX,
@@ -85,7 +86,7 @@ io.on('connection', function (socket) {
         color: color
       };
     } else if (type === 'move') {
-      var currStroke = {
+      currStroke = {
         prevX: prevStroke.currX,
         prevY: prevStroke.currY,
         currX: canvasX,

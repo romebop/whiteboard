@@ -1,0 +1,35 @@
+body {
+  font-family: Lato, Helvetica Neue, Helvetica;
+}
+
+#container {
+  text-align: center;
+  position: absolute;
+  top: 30%;
+  width: 100%;
+}
+
+#description {
+  font-size: 30px;
+  margin-bottom: 15px;
+}
+
+#button {
+	background-color:#2dabf9;
+	-moz-border-radius:3px;
+	-webkit-border-radius:3px;
+	border-radius:3px;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-size:15px;
+	padding:9px 23px;
+	text-decoration:none;
+}
+#button:hover {
+	background-color:#0688fa;
+}
+#button:active {
+	position:relative;
+	top:1px;
+}

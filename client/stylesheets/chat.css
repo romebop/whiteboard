@@ -19,19 +19,19 @@
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
 }
 
-#messages { 
+#messages {
   position: absolute;
   width: 350px;
   height: 535px;
-  list-style-type: none; 
-  margin: 0; 
-  padding: 0; 
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
   overflow-y: scroll;
   word-wrap: break-word;
 }
 
-#messages li { 
-  padding: 5px 10px; 
+#messages li {
+  padding: 5px 10px;
   font-size: 90%;
   background: #fff;
 }
@@ -41,6 +41,7 @@
   font-size: 90%;
   position: relative;
   bottom: 1px;
+  color: #868e8e;
 }
 
 #chatform {
@@ -49,7 +50,7 @@
   width: 100%;
 }
 
-#chatform input { 
+#chatform input {
   padding: 10px;
   width: 330px;
   font-size: 15px;
@@ -65,9 +66,9 @@
 }
 
 #chatform input:focus {
-  background-color: #2C3E50;
+  background-color: #FFF;
   outline: none;
-  color: #ECF0F1;
+  color: #000;
 }
 
 #handlebox {
@@ -103,7 +104,7 @@
   width: 100%;
 }
 
-#handleform input { 
+#handleform input {
   padding: 10px;
   width: 330px;
   font-size: 15px;
@@ -119,9 +120,9 @@
 }
 
 #handleform input:focus {
-  background-color: #2C3E50;
+  background-color: #FFF;
   outline: none;
-  color: #ECF0F1;
+  color: #000;
 }
 
 .black {

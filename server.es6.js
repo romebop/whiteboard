@@ -1,17 +1,17 @@
-var express    = require('express');
-var app        = express();
-var http       = require('http').Server(app);
-var io         = require('socket.io')(http);
-var favicon    = require('serve-favicon');
-var stringHash = require('string-hash');
-var async      = require('async');
+const express    = require('express');
+const app        = express();
+const http       = require('http').Server(app);
+const io         = require('socket.io')(http);
+const favicon    = require('serve-favicon');
+const stringHash = require('string-hash');
+const async      = require('async');
 
-var db         = require('./db');
+const db         = require('./db');
 
-app.use(favicon(__dirname + '/assets/images/favicon.ico'));
+app.use(favicon(__dirname + '/client/images/favicon.ico'));
 
 app.set('port', (process.env.PORT || 3000));
-app.use(express.static(__dirname + '/assets'));
+app.use(express.static(__dirname + '/client'));
 
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
@@ -31,15 +31,15 @@ db.connect(function(err) {
 
 /* server side socket */
 
-var connectionId = 1,
+let connectionId = 1,
   strokeById = {}, // necessary since canvas only has 'single cursor'
   totalConnections = 0
   ;
 
 io.on('connection', function(socket) {
-  
+
   totalConnections++;
-  console.log('A connection has been made! ID: ' + connectionId);
+  console.log('connection made. ID: ' + connectionId);
   socket.broadcast.emit('count', totalConnections);
 
   // initialize client
@@ -48,11 +48,11 @@ io.on('connection', function(socket) {
     db.getChats,
   ], function(err, results) {
     if (err) throw err;
-    var [strokes, chats] = results;
-    socket.emit('load', { 
+    let [strokes, chats] = results;
+    socket.emit('load', {
       'connectionId': connectionId,
-      'userCount': totalConnections, 
-      'strokeHistory': strokes, 
+      'userCount': totalConnections,
+      'strokeHistory': strokes,
       'chatHistory': chats,
     });
     strokeById[connectionId] = {};
@@ -61,9 +61,10 @@ io.on('connection', function(socket) {
 
   // receive client emission, save canvas state, & emit to all clients
   socket.on('draw', function({ type, color, width, id, canvasX, canvasY }) {
-    var prevStroke = strokeById[id];
+    let prevStroke = strokeById[id];
+    let currStroke;
     if (type === 'down') {
-      var currStroke = {
+      currStroke = {
         prevX: canvasX,
         prevY: canvasY,
         currX: canvasX,
@@ -72,7 +73,7 @@ io.on('connection', function(socket) {
         color,
       };
     } else if (type === 'move') {
-      var currStroke = {
+      currStroke = {
         prevX: prevStroke.currX,
         prevY: prevStroke.currY,
         currX: canvasX,
@@ -92,7 +93,7 @@ io.on('connection', function(socket) {
   });
 
   socket.on('chat', function({ handle, text }) {
-    var message = {
+    let message = {
       handle,
       text,
       color: getColor(handle),
@@ -111,7 +112,7 @@ io.on('connection', function(socket) {
 });
 
 function getColor(handle) {
-  var colors = ['green', 'blue', 'red', 'black', 'orange'];
-  var randomIndex = Math.abs(stringHash(handle) % colors.length);
+  let colors = ['green', 'blue', 'red', 'black', 'orange'];
+  let randomIndex = Math.abs(stringHash(handle) % colors.length);
   return colors[randomIndex];
 }
