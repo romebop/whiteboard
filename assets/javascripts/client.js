@@ -5,14 +5,7 @@ const socket = io();
 let id;
 let handle;
 
-socket.on("load", (
-  {
-    connectionId,
-    userCount,
-    strokeHistory,
-    chatHistory
-  }
-) => {
+socket.on("load", ({ connectionId, userCount, strokeHistory, chatHistory }) => {
   id = connectionId;
   handle = `Client ${id}`;
   // load global state: canvas, chat messages, & user count
@@ -57,7 +50,7 @@ function initCanvas() {
   ctx.lineJoin = "round";
   // emit client input to server
   canvas.addEventListener(
-    "mousemove",
+    "pointermove",
     e => {
       if (flag) {
         updateXY(e);
@@ -68,9 +61,10 @@ function initCanvas() {
     false
   );
   canvas.addEventListener(
-    "mousedown",
+    "pointerdown",
     e => {
       flag = true;
+      canvas.setPointerCapture(e.pointerId);
       updateXY(e);
       draw({ prevX, prevY, currX, currY, width, color });
       emitMouse("down", e);
@@ -78,14 +72,7 @@ function initCanvas() {
     false
   );
   canvas.addEventListener(
-    "mouseup",
-    e => {
-      flag = false;
-    },
-    false
-  );
-  canvas.addEventListener(
-    "mouseout",
+    "pointerup",
     e => {
       flag = false;
     },
@@ -94,12 +81,12 @@ function initCanvas() {
 }
 
 function updateXY(e) {
-  if (e.type === "mousedown") {
+  if (e.type === "pointerdown") {
     prevX = e.clientX - canvas.offsetLeft;
     prevY = e.clientY - canvas.offsetTop;
     currX = e.clientX - canvas.offsetLeft;
     currY = e.clientY - canvas.offsetTop;
-  } else if (e.type === "mousemove") {
+  } else if (e.type === "pointermove") {
     prevX = currX;
     prevY = currY;
     currX = e.clientX - canvas.offsetLeft;
