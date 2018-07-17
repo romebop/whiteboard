@@ -1,6 +1,6 @@
 var MongoClient = require("mongodb").MongoClient;
 //var { mongoURL } = require('./config.js');
-var url = `mongodb://localhost:27017/whiteboard`;
+var url = `mongodb://localhost:27017/`;
 
 var state = {
   db: null
@@ -10,9 +10,9 @@ function connect(callback) {
   if (state.db) return callback();
   MongoClient.connect(
     url,
-    function(err, db) {
+    function(err, client) {
       if (err) return callback(err);
-      state.db = db;
+      state.db = client.db("whiteboard");
       callback(); // error parameter undefined
     }
   );
