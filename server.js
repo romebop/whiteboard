@@ -1,49 +1,52 @@
-var express = require("express");
-var app = express();
-var http = require("http").Server(app);
-var io = require("socket.io")(http);
-var favicon = require("serve-favicon");
-var stringHash = require("string-hash");
-var async = require("async");
+const express = require("express");
+const app = express();
+const http = require("http").Server(app);
+const io = require("socket.io")(http);
+const favicon = require("serve-favicon");
+const stringHash = require("string-hash");
+const async = require("async");
 
-var db = require("./db");
+const db = require("./db");
 
-app.use(favicon(__dirname + "/assets/images/favicon.ico"));
+app.use(favicon(`${__dirname}/assets/images/favicon.ico`));
 
 app.set("port", process.env.PORT || 3000);
-app.use(express.static(__dirname + "/assets"));
+app.use(express.static(`${__dirname}/assets`));
 
-app.get("/", function(req, res) {
-  res.sendFile(__dirname + "/index.html");
+app.get("/", (req, res) => {
+  res.sendFile(`${__dirname}/index.html`);
 });
 
 // connect to mongodb on start up
-db.connect(function(err) {
+db.connect(err => {
   if (err) {
     console.log("Unable to connect to Mongo.");
     process.exit(1); // exit with failure code
   } else {
-    http.listen(app.get("port"), function() {
-      console.log("Server running on localhost:" + app.get("port"));
+    http.listen(app.get("port"), () => {
+      console.log(`Server running on localhost:${app.get("port")}`);
     });
   }
 });
 
 /* server side socket */
 
-var connectionId = 1,
-  strokeById = {}, // necessary since canvas only has 'single cursor'
-  totalConnections = 0;
+let connectionId = 1;
 
-io.on("connection", function(socket) {
+const // necessary since canvas only has 'single cursor'
+strokeById = {};
+
+let totalConnections = 0;
+
+io.on("connection", socket => {
   totalConnections++;
-  console.log("A connection has been made! ID: " + connectionId);
+  console.log(`A connection has been made! ID: ${connectionId}`);
   socket.broadcast.emit("count", totalConnections);
 
   // initialize client
-  async.parallel([db.getStrokes, db.getChats], function(err, results) {
+  async.parallel([db.getStrokes, db.getChats], (err, results) => {
     if (err) throw err;
-    var [strokes, chats] = results;
+    const [strokes, chats] = results;
     socket.emit("load", {
       connectionId: connectionId,
       userCount: totalConnections,
@@ -55,8 +58,8 @@ io.on("connection", function(socket) {
   });
 
   // receive client emission, save canvas state, & emit to all clients
-  socket.on("draw", function({ type, color, width, id, canvasX, canvasY }) {
-    var prevStroke = strokeById[id];
+  socket.on("draw", ({ type, color, width, id, canvasX, canvasY }) => {
+    const prevStroke = strokeById[id];
     if (type === "down") {
       var currStroke = {
         prevX: canvasX,
@@ -81,13 +84,13 @@ io.on("connection", function(socket) {
     socket.broadcast.emit("draw", { stroke: currStroke });
   });
 
-  socket.on("clear", function() {
+  socket.on("clear", () => {
     db.clearStrokes();
     io.emit("clear");
   });
 
-  socket.on("chat", function({ handle, text }) {
-    var message = {
+  socket.on("chat", ({ handle, text }) => {
+    const message = {
       handle,
       text,
       color: getColor(handle),
@@ -97,7 +100,7 @@ io.on("connection", function(socket) {
     io.emit("chat", message);
   });
 
-  socket.on("disconnect", function() {
+  socket.on("disconnect", () => {
     totalConnections--;
     io.emit("count", totalConnections);
     console.log("A user has disconnected.");
@@ -105,7 +108,7 @@ io.on("connection", function(socket) {
 });
 
 function getColor(handle) {
-  var colors = ["green", "blue", "red", "black", "orange"];
-  var randomIndex = Math.abs(stringHash(handle) % colors.length);
+  const colors = ["green", "blue", "red", "black", "orange"];
+  const randomIndex = Math.abs(stringHash(handle) % colors.length);
   return colors[randomIndex];
 }

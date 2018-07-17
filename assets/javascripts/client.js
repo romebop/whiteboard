@@ -1,50 +1,54 @@
 // client side socket
 
-var socket = io(),
-  id,
-  handle;
+const socket = io();
 
-socket.on("load", function({
-  connectionId,
-  userCount,
-  strokeHistory,
-  chatHistory
-}) {
+let id;
+let handle;
+
+socket.on("load", (
+  {
+    connectionId,
+    userCount,
+    strokeHistory,
+    chatHistory
+  }
+) => {
   id = connectionId;
-  handle = "Client " + id;
+  handle = `Client ${id}`;
   // load global state: canvas, chat messages, & user count
-  for (var stroke of strokeHistory) draw(stroke);
-  for (var chat of chatHistory) appendMessage(chat);
+  for (const stroke of strokeHistory) draw(stroke);
+  for (const chat of chatHistory) appendMessage(chat);
   updateCount(userCount);
 });
 
-socket.on("draw", function({ stroke }) {
+socket.on("draw", ({ stroke }) => {
   draw(stroke);
 });
 
-socket.on("clear", function() {
+socket.on("clear", () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 });
 
-socket.on("chat", function(message) {
+socket.on("chat", message => {
   appendMessage(message);
 });
 
-socket.on("count", function(userCount) {
+socket.on("count", userCount => {
   updateCount(userCount);
 });
 
 // drawing
 
-var canvas,
-  ctx,
-  flag = false,
-  prevX = 0,
-  prevY = 0,
-  currX = 0,
-  currY = 0,
-  width = 2,
-  color = "black";
+var canvas;
+
+var ctx;
+let flag = false;
+let prevX = 0;
+let prevY = 0;
+let currX = 0;
+let currY = 0;
+let width = 2;
+let color = "black";
 
 function initCanvas() {
   canvas = document.getElementById("whiteboard");
@@ -54,7 +58,7 @@ function initCanvas() {
   // emit client input to server
   canvas.addEventListener(
     "mousemove",
-    function(e) {
+    e => {
       if (flag) {
         updateXY(e);
         draw({ prevX, prevY, currX, currY, width, color });
@@ -65,7 +69,7 @@ function initCanvas() {
   );
   canvas.addEventListener(
     "mousedown",
-    function(e) {
+    e => {
       flag = true;
       updateXY(e);
       draw({ prevX, prevY, currX, currY, width, color });
@@ -75,14 +79,14 @@ function initCanvas() {
   );
   canvas.addEventListener(
     "mouseup",
-    function(e) {
+    e => {
       flag = false;
     },
     false
   );
   canvas.addEventListener(
     "mouseout",
-    function(e) {
+    e => {
       flag = false;
     },
     false
@@ -142,24 +146,24 @@ function clearCanvas() {
 
 // chat
 
-$(function() {
+$(() => {
   $("#h").focus();
 });
 
-$("#handleform").submit(function() {
+$("#handleform").submit(() => {
   if ($("#h").val() !== "") {
     handle = $("#h").val();
   }
   $("#handlebox").addClass("hide");
   $("#chatbox").removeClass("hide");
   $("#messages").scrollTop($("#messages")[0].scrollHeight);
-  $(function() {
+  $(() => {
     $("#m").focus();
   });
   return false; // cancel submit action
 });
 
-$("#chatform").submit(function() {
+$("#chatform").submit(() => {
   socket.emit("chat", {
     handle,
     text: $("#m").val()
@@ -169,20 +173,20 @@ $("#chatform").submit(function() {
 });
 
 function appendMessage({ handle, text, color, date }) {
-  var time = displayTime(date);
-  var message = `<li><p id="time">[${time}]</p> <b class="${color}">${handle}</b>: ${text}</li>`;
+  const time = displayTime(date);
+  const message = `<li><p id="time">[${time}]</p> <b class="${color}">${handle}</b>: ${text}</li>`;
   $("#messages").append($(message));
   $("#messages").scrollTop($("#messages")[0].scrollHeight);
 }
 
 function displayTime(dateMS) {
-  var time = new Date(dateMS);
-  var hours = time.getHours();
-  var minutes = time.getMinutes();
-  var seconds = time.getSeconds();
-  var meridiem;
-  if (minutes < 10) minutes = "0" + minutes;
-  if (seconds < 10) seconds = "0" + seconds;
+  const time = new Date(dateMS);
+  let hours = time.getHours();
+  let minutes = time.getMinutes();
+  let seconds = time.getSeconds();
+  let meridiem;
+  if (minutes < 10) minutes = `0${minutes}`;
+  if (seconds < 10) seconds = `0${seconds}`;
   if (hours >= 12) {
     meridiem = "pm";
     if (hours > 12) hours -= 12;
@@ -190,7 +194,7 @@ function displayTime(dateMS) {
     meridiem = "am";
     if (hours === 0) hours = 12;
   }
-  return hours + ":" + minutes + meridiem; // + ':' + seconds + ' ';
+  return `${hours}:${minutes}${meridiem}`; // + ':' + seconds + ' ';
 }
 
 // online user counter
