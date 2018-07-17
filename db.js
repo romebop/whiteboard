@@ -1,18 +1,21 @@
-var MongoClient = require('mongodb').MongoClient;
+var MongoClient = require("mongodb").MongoClient;
 //var { mongoURL } = require('./config.js');
-var url = `mongodb://${process.env.db_username}:${process.env.db_password}@ds037814.mongolab.com:37814/heroku_1cjc54ck`;
+var url = `mongodb://localhost:27017/whiteboard`;
 
 var state = {
-  db: null,
+  db: null
 };
 
 function connect(callback) {
   if (state.db) return callback();
-  MongoClient.connect(url, function(err, db) {
-    if (err) return callback(err);
-    state.db = db;
-    callback(); // error parameter undefined
-  });
+  MongoClient.connect(
+    url,
+    function(err, db) {
+      if (err) return callback(err);
+      state.db = db;
+      callback(); // error parameter undefined
+    }
+  );
 }
 
 function get() {
@@ -20,24 +23,27 @@ function get() {
 }
 
 function getStrokes(callback) {
-  if (!state.db) throw new Error('Not connected to DB');
-  var strokeColl = state.db.collection('stroke');
+  if (!state.db) throw new Error("Not connected to DB");
+  var strokeColl = state.db.collection("stroke");
   strokeColl.find().toArray(function(err, docs) {
     callback(err, docs);
   });
 }
 
 function getChats(callback) {
-  if (!state.db) throw new Error('Not connected to DB');
-  var chatColl = state.db.collection('chat');
-  chatColl.find().sort({date: 1}).toArray(function(err, docs) {
-    callback(err, docs);
-  });
+  if (!state.db) throw new Error("Not connected to DB");
+  var chatColl = state.db.collection("chat");
+  chatColl
+    .find()
+    .sort({ date: 1 })
+    .toArray(function(err, docs) {
+      callback(err, docs);
+    });
 }
 
 function addStroke(obj) {
-  if (!state.db) throw new Error('Not connected to DB');
-  var strokeColl = state.db.collection('stroke');
+  if (!state.db) throw new Error("Not connected to DB");
+  var strokeColl = state.db.collection("stroke");
   // console.log('trying to insert', obj);
   strokeColl.insertOne(obj, function(err) {
     if (err) throw err;
@@ -45,16 +51,16 @@ function addStroke(obj) {
 }
 
 function addChat(obj) {
-  if (!state.db) throw new Error('Not connected to DB');
-  var chatColl = state.db.collection('chat');
+  if (!state.db) throw new Error("Not connected to DB");
+  var chatColl = state.db.collection("chat");
   chatColl.insertOne(obj, function(err) {
     if (err) throw err;
   });
 }
 
 function clearStrokes() {
-  if (!state.db) throw new Error('Not connected to DB');
-  var strokeColl = state.db.collection('stroke');
+  if (!state.db) throw new Error("Not connected to DB");
+  var strokeColl = state.db.collection("stroke");
   strokeColl.deleteMany({});
 }
 
@@ -75,5 +81,5 @@ module.exports = {
   addStroke,
   addChat,
   clearStrokes,
-  close,
+  close
 };
