@@ -9,7 +9,7 @@
     "mongodb": "~2.0",
     "path": "^0.11.14",
     "serve-favicon": "^2.3.0",
-    "socket.io": "^1.3.6",
+    "socket.io": "^2.1.1",
     "string-hash": "^1.1.0"
   },
   "engines": {
