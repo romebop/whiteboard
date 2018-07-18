@@ -79,12 +79,7 @@ var offset = { x: 0, y: 0 };
 
 function translate() {
   var s = `transform: translate(${offset.x}px, ${offset.y}px) scale(${scale});`;
-  console.log(s);
   document.querySelector("#whiteboard").style = s;
-}
-
-function updateCount(n) {
-  $("#count").text(n);
 }
 
 new Vue({
@@ -117,41 +112,29 @@ new Vue({
       scale = 1;
       translate();
     },
+    onPointerMove(e) {
+      if (flag) {
+        updateXY(e);
+        draw({ prevX, prevY, currX, currY, width, color });
+        emitMouse("move", e);
+      }
+    },
+    onPointerDown(e) {
+      flag = true;
+      canvas.setPointerCapture(e.pointerId);
+      updateXY(e);
+      draw({ prevX, prevY, currX, currY, width, color });
+      emitMouse("down", e);
+    },
+    onPointerUp(e) {
+      flag = false;
+    },
+
     initCanvas() {
-      canvas = document.getElementById("whiteboard");
+      canvas = this.$refs.mainCanvas;
       ctx = canvas.getContext("2d");
       ctx.lineCap = "round";
       ctx.lineJoin = "round";
-      // emit client input to server
-      canvas.addEventListener(
-        "pointermove",
-        e => {
-          if (flag) {
-            updateXY(e);
-            draw({ prevX, prevY, currX, currY, width, color });
-            emitMouse("move", e);
-          }
-        },
-        false
-      );
-      canvas.addEventListener(
-        "pointerdown",
-        e => {
-          flag = true;
-          canvas.setPointerCapture(e.pointerId);
-          updateXY(e);
-          draw({ prevX, prevY, currX, currY, width, color });
-          emitMouse("down", e);
-        },
-        false
-      );
-      canvas.addEventListener(
-        "pointerup",
-        e => {
-          flag = false;
-        },
-        false
-      );
     }
   },
   mounted() {
@@ -181,7 +164,7 @@ new Vue({
     });
 
     socket.on("count", userCount => {
-      updateCount(userCount);
+      this.count = userCount;
     });
 
     this.initCanvas();
