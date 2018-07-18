@@ -74,12 +74,6 @@ function erase() {
   width = 14;
 }
 
-function clearCanvas() {
-  if (confirm("Clear Whiteboard?")) {
-    socket.emit("clear");
-  }
-}
-
 var scale = 1;
 var offset = { x: 0, y: 0 };
 
@@ -101,6 +95,11 @@ new Vue({
     };
   },
   methods: {
+    clearCanvas() {
+      if (confirm("Clear Whiteboard?")) {
+        socket.emit("clear");
+      }
+    },
     zoom(s) {
       scale *= s;
       translate();
