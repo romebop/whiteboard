@@ -81,27 +81,38 @@ function initCanvas() {
 }
 
 function updateXY(e) {
+  const mouseX = applyZoomX(e.clientX - canvas.offsetLeft);
+  const mouseY = applyZoomY(e.clientY - canvas.offsetTop);
   if (e.type === "pointerdown") {
-    prevX = e.clientX - canvas.offsetLeft;
-    prevY = e.clientY - canvas.offsetTop;
-    currX = e.clientX - canvas.offsetLeft;
-    currY = e.clientY - canvas.offsetTop;
+    prevX = mouseX;
+    prevY = mouseY;
+    currX = mouseX;
+    currY = mouseY;
   } else if (e.type === "pointermove") {
     prevX = currX;
     prevY = currY;
-    currX = e.clientX - canvas.offsetLeft;
-    currY = e.clientY - canvas.offsetTop;
+    currX = mouseX;
+    currY = mouseY;
   }
 }
 
+function applyZoomX(x) {
+  return (x - offset.x) / scale;
+}
+function applyZoomY(x) {
+  return (x - offset.y) / scale;
+}
+
 function emitMouse(type, e) {
+  const mouseX = e.clientX - canvas.offsetLeft;
+  const mouseY = e.clientY - canvas.offsetTop;
   socket.emit("draw", {
     type,
     color,
     width,
     id,
-    canvasX: e.clientX - canvas.offsetLeft,
-    canvasY: e.clientY - canvas.offsetTop
+    canvasX: applyZoomX(mouseX),
+    canvasY: applyZoomY(mouseY)
   });
 }
 
@@ -131,6 +142,35 @@ function clearCanvas() {
   }
 }
 
+var scale = 1;
+var offset = { x: 0, y: 0 };
+
+function translate() {
+  var s = `transform: translate(${offset.x}px, ${offset.y}px) scale(${scale});`;
+  console.log(s);
+  document.querySelector("#whiteboard").style = s;
+}
+
+function zoom(s) {
+  scale *= s;
+  translate();
+  return false;
+}
+
+function move(x, y) {
+  offset.x += x;
+  offset.y += y;
+  translate();
+  return false;
+}
+
+function reset() {
+  offset.x = 0;
+  offset.y = 0;
+  scale = 1;
+  translate();
+}
+
 // chat
 
 $(() => {
@@ -143,7 +183,7 @@ $("#handleform").submit(() => {
   }
   $("#handlebox").addClass("hide");
   $("#chatbox").removeClass("hide");
-  $("#messages").scrollTop($("#messages")[0].scrollHeight);
+  // $("#messages").scrollTop($("#messages")[0].scrollHeight);
   $(() => {
     $("#m").focus();
   });
@@ -163,7 +203,7 @@ function appendMessage({ handle, text, color, date }) {
   const time = displayTime(date);
   const message = `<li><p id="time">[${time}]</p> <b class="${color}">${handle}</b>: ${text}</li>`;
   $("#messages").append($(message));
-  $("#messages").scrollTop($("#messages")[0].scrollHeight);
+  // $("#messages").scrollTop($("#messages")[0].scrollHeight);
 }
 
 function displayTime(dateMS) {
