@@ -10,25 +10,31 @@
   <meta name="viewport" content="width=device-width, user-scalable=no" />
 </head>
 
-<body onload='initCanvas()'>
-  <div id='container'>
-    <div id='draw-container' ontouchmove="return false;">
-      <canvas touch-action="none" id='whiteboard' width='2000' height='2000'></canvas>
+<body>
+  <div id="app">
+    <div id='container'>
+      <div id='draw-container' ontouchmove="return false;">
+        <canvas touch-action="none" id='whiteboard' width='2000' height='2000'></canvas>
+      </div>
     </div>
-  </div>
-  <div style="position: absolute;">
-    <div class="ui" touch-action="none" ontouchstart="zoom(1.5)" onpointerdown="zoom(1.5)" ontouchend="return false;">拡大</div>
-    <div class="ui" touch-action="none" ontouchstart="zoom(1/1.5)" onpointerdown="zoom(1/1.5)" ontouchend="return false;">縮小</div>
-    <div class="ui" touch-action="none" ontouchstart="move(100, 0)" onpointerdown="move(100, 0)" ontouchend="return false;">←</div>
-    <div class="ui" touch-action="none" ontouchstart="move(0, 100)" onpointerdown="move(0, 100)" ontouchend="return false;">↑</div>
-    <div class="ui" touch-action="none" ontouchstart="move(0, -100)" onpointerdown="move(0, -100)" ontouchend="return false;">↓</div>
-    <div class="ui" touch-action="none" ontouchstart="move(-100, 0)" onpointerdown="move(-100, 0)" ontouchend="return false;">→</div>
-    <div class="ui" touch-action="none" ontouchstart="reset()" onpointerdown="reset()" ontouchend="return false;">原寸</div>
-    <div class="ui" touch-action="none" ontouchstart="clearCanvas()" onpointerdown="clearCanvas()" ontouchend="return false;">キャンバス消去</div>
+    <div style="position: absolute;">
+      <div class="ui" touch-action="none" @touchstart="zoom(1.5)" @pointerdown="zoom(1.5)" @touchend.prevent>拡大</div>
+      <div class="ui" touch-action="none" @touchstart="zoom(1/1.5)" @pointerdown="zoom(1/1.5)" @touchend.prevent>縮小</div>
+      <div class="ui" touch-action="none" @touchstart="move(100, 0)" @pointerdown="move(100, 0)" @touchend.prevent>←</div>
+      <div class="ui" touch-action="none" @touchstart="move(0, 100)" @pointerdown="move(0, 100)" @touchend.prevent>↑</div>
+      <div class="ui" touch-action="none" @touchstart="move(0, -100)" @pointerdown="move(0, -100)" @touchend.prevent>↓</div>
+      <div class="ui" touch-action="none" @touchstart="move(-100, 0)" @pointerdown="move(-100, 0)" @touchend.prevent>→</div>
+      <div class="ui" touch-action="none" @touchstart="reset()" @pointerdown="reset()" @touchend.prevent>原寸</div>
+      <div class="ui" touch-action="none" @touchstart="clearCanvas()" @pointerdown="clearCanvas()" @touchend.prevent>キャンバス消去</div>
+
+    </div>
 
   </div>
 
 
+
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
   <script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js'></script>
   <script src='/javascripts/jquery.js'></script>
