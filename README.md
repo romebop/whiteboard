@@ -16,3 +16,8 @@ Socket.IO
 
 MongoDB Node Driver
 > http://mongodb.github.io/node-mongodb-native/2.0/
+
+License
+-------
+
+MIT
