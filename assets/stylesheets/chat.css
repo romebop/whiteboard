@@ -1,10 +1,8 @@
 #chat-container {
   width: 38%;
   height: 100%;
-
   position: absolute;
   right: 0px;
-
   overflow: hidden;
 }
 
@@ -14,7 +12,7 @@
   background: #fff;
   position: absolute;
   top: calc(50% - 290px);
-  left: 40px;
+  left: 20px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
 }
@@ -55,6 +53,7 @@
   font-size: 15px;
   font-family: inherit;
   border: none;
+  color: #444;
   background-color: #f1f1f1;
   border-top: 0.5px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0 -0.5px 0.5px rgba(0, 0, 0, 0.1);
@@ -65,9 +64,12 @@
 }
 
 #chatform input:focus {
-  background-color: #2C3E50;
+  background-color: #fff;
   outline: none;
-  color: #ECF0F1;
+}
+
+#chatform input::placeholder {
+  color: #bbb;
 }
 
 #handlebox {
@@ -76,7 +78,7 @@
   background: #fff;
   position: absolute;
   top: calc(50% - 290px);
-  left: 40px;
+  left: 20px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
 }
@@ -90,11 +92,12 @@
 
 #chat-logo {
   position: absolute;
-  width: 150px;
-  height: 150px;
-  top: calc(50% - 75px);
-  left: calc(50% - 75px);
-  fill: #a9a9a9;
+  width: 80px;
+  height: 100px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  fill: #a9a9a94f;
 }
 
 #handleform {
@@ -109,6 +112,7 @@
   font-size: 15px;
   font-family: inherit;
   border: none;
+  color: #444;
   background-color: #f1f1f1;
   border-top: 0.5px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0 -0.5px 0.5px rgba(0, 0, 0, 0.1);
@@ -119,9 +123,12 @@
 }
 
 #handleform input:focus {
-  background-color: #2C3E50;
+  background-color: #fff;
   outline: none;
-  color: #ECF0F1;
+}
+
+#handleform input::placeholder {
+  color: #bbb;
 }
 
 .black {

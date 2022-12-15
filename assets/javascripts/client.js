@@ -1,47 +1,45 @@
 // client side socket
 
-var socket = io(),
-  id, 
-  handle
-  ;
+const socket = io();
+let id;
+let handle; 
 
-socket.on('load', function({ connectionId, userCount, strokeHistory, chatHistory }) {
+socket.on('load', ({ connectionId, userCount, strokeHistory, chatHistory }) => {
   id = connectionId;
-  handle = "Client " + id;
+  handle = `Client ${id}`;
   // load global state: canvas, chat messages, & user count
-  for (var stroke of strokeHistory) draw(stroke);
-  for (var chat of chatHistory) appendMessage(chat);
+  for (const stroke of strokeHistory) draw(stroke);
+  for (const chat of chatHistory) appendMessage(chat);
   updateCount(userCount);
 });
 
-socket.on('draw', function({ stroke }) {
+socket.on('draw', ({ stroke }) => {
   draw(stroke);
 });
 
-socket.on('clear', function() {
+socket.on('clear', () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 });
 
-socket.on('chat', function(message) {
+socket.on('chat', (message) => {
   appendMessage(message);
 });
 
-socket.on('count', function(userCount) {
+socket.on('count', (userCount) => {
   updateCount(userCount);
 });
 
 // drawing
 
-var canvas,
-  ctx,
-  flag = false, 
-  prevX = 0, 
-  prevY = 0, 
-  currX = 0, 
-  currY = 0, 
-  width = 2,
-  color = 'black'
-  ; 
+let canvas;
+let ctx;
+let flag = false;
+let prevX = 0;
+let prevY = 0;
+let currX = 0;
+let currY = 0;
+let width;
+let color; 
 
 function initCanvas() {
   canvas = document.getElementById('whiteboard');
@@ -49,25 +47,38 @@ function initCanvas() {
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
   // emit client input to server
-  canvas.addEventListener('mousemove', function (e) {
+  canvas.addEventListener('mousemove', (e) => {
     if (flag) {
       updateXY(e);
       draw({ prevX, prevY, currX, currY, width, color });
       emitMouse('move', e);
     }
   }, false);
-  canvas.addEventListener('mousedown', function (e) {
+  canvas.addEventListener('mousedown', (e) => {
     flag = true;
     updateXY(e);
     draw({ prevX, prevY, currX, currY, width, color });
     emitMouse('down', e);
   }, false);
-  canvas.addEventListener('mouseup', function (e) {
+  canvas.addEventListener('mouseup', (e) => {
     flag = false;
   }, false);
-  canvas.addEventListener('mouseout', function (e) {
+  canvas.addEventListener('mouseout', (e) => {
     flag = false;
   }, false);
+}
+
+function initColor() {
+  color = $('#colors').children(':first').attr('id');
+  $('#colors').children(':first').addClass('selected');
+}
+
+function initWidth() {
+  width = +$('#width-select').val();
+}
+
+function chooseWidth({ value }) {
+  width = +value;
 }
 
 function updateXY(e) {
@@ -107,12 +118,12 @@ function draw(stroke) {
 
 function chooseColor({ id }) {
   color = id;
-  width = 2;
+  $('.color').removeClass('selected');
+  $(`#colors #${id}`).addClass('selected');
 }
 
 function erase() {
   color = 'white';
-  width = 14;
 }
 
 function clearCanvas() {
@@ -123,24 +134,24 @@ function clearCanvas() {
 
 // chat
 
-$(function() {
-  $("#h").focus();
+$(() => {
+  $('#h').focus();
 });
 
-$('#handleform').submit(function() {
+$('#handleform').submit(() => {
   if ($('#h').val() !== '') {
     handle = $('#h').val();
   }
   $('#handlebox').addClass('hide');
   $('#chatbox').removeClass('hide');
   $('#messages').scrollTop( $('#messages')[0].scrollHeight );
-  $(function() {
-    $("#m").focus();
+  $(() => {
+    $('#m').focus();
   });
   return false; // cancel submit action
 });
 
-$('#chatform').submit(function() {
+$('#chatform').submit(() => {
   socket.emit('chat', { 
     handle, 
     'text': $('#m').val() 
@@ -150,18 +161,18 @@ $('#chatform').submit(function() {
 });
 
 function appendMessage({ handle, text, color, date }) {
-  var time = displayTime(date);
-  var message = `<li><p id="time">[${time}]</p> <b class="${color}">${handle}</b>: ${text}</li>`;
+  const time = displayTime(date);
+  const message = `<li><p id='time'>[${time}]</p> <b class='${color}'>${handle}</b>: ${text}</li>`;
   $('#messages').append($(message));
   $('#messages').scrollTop( $('#messages')[0].scrollHeight );
 }
 
 function displayTime(dateMS) {
-  var time = new Date(dateMS);
-  var hours = time.getHours();
-  var minutes = time.getMinutes();
-  var seconds = time.getSeconds();
-  var meridiem;
+  const time = new Date(dateMS);
+  let hours = time.getHours();
+  let minutes = time.getMinutes();
+  let seconds = time.getSeconds();
+  let meridiem;
   if (minutes < 10) minutes = '0' + minutes;
   if (seconds < 10) seconds = '0' + seconds;
   if (hours >= 12) {
@@ -171,7 +182,7 @@ function displayTime(dateMS) {
     meridiem = 'am';
     if (hours === 0) hours = 12;
   }
-  return hours + ':' + minutes + meridiem; // + ':' + seconds + ' ';
+  return `${hours}:${minutes} ${meridiem}`;
 }
 
 // online user counter
@@ -179,3 +190,7 @@ function displayTime(dateMS) {
 function updateCount(n) {
   $('#count').text(n);
 }
+
+initCanvas();
+initColor();
+initWidth();

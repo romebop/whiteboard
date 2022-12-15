@@ -37,6 +37,10 @@
   cursor: -webkit-grabbing;
 }
 
+.pointable:hover {
+  cursor: pointer;
+}
+
 #colors {
   position: absolute;
   top: calc(50% - 289px);
@@ -46,6 +50,7 @@
 
 .color {
   display: inline-block;
+  position: relative;
   border-radius: 2px;
   margin-right: 5px;
   width: 30px;
@@ -54,12 +59,22 @@
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
 }
 
+.color.selected::after {
+  content: '✔';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-size: 12px;
+}
+
 #black {
   background: black;
 }
 
-#green {
-  background: green;
+#aqua {
+  background: aqua;
 }
 
 #blue {
@@ -78,6 +93,13 @@
   background: orange;
 }
 
+#width-select {
+  position: absolute;
+  top: calc(50% - 281px);
+  right: 373px;
+  width: 80px;
+}
+
 #options {
   position: absolute;
   top: calc(50% - 287px);
@@ -86,17 +108,17 @@
 
 #eraser {
   display: inline-block;
-  width: 30px;
-  height: 30px;
-  fill: #2C3E50;
+  width: 26px;
+  height: 26px;
+  fill: #2c3e50a3;
 }
 
 #clear {
   display: inline-block;
-  width: 30px;
-  height: 30px;
+  width: 26px;
+  height: 26px;
   margin-left: 5px;
-  fill: #2C3E50;
+  fill: #2c3e50a3;
 }
 
 #online {

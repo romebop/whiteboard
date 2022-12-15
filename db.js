@@ -1,18 +1,20 @@
-var MongoClient = require('mongodb').MongoClient;
-//var { mongoURL } = require('./config.js');
-var url = `mongodb://${process.env.db_username}:${process.env.db_password}@ds037814.mongolab.com:37814/heroku_1cjc54ck`;
+const { MongoClient } = require('mongodb');
+const uri = process.env.MONGODB_URI;
 
-var state = {
+const state = {
+  client: null,
   db: null,
 };
 
-function connect(callback) {
-  if (state.db) return callback();
-  MongoClient.connect(url, function(err, db) {
+async function connect(callback) {
+  try {
+    state.client = new MongoClient(uri);
+    await state.client.connect();
+    state.db = state.client.db('whiteboard');
+    callback();
+  } catch (err) {
     if (err) return callback(err);
-    state.db = db;
-    callback(); // error parameter undefined
-  });
+  }
 }
 
 function get() {
@@ -20,51 +22,40 @@ function get() {
 }
 
 function getStrokes(callback) {
-  if (!state.db) throw new Error('Not connected to DB');
-  var strokeColl = state.db.collection('stroke');
-  strokeColl.find().toArray(function(err, docs) {
+  const strokeColl = state.db.collection('stroke');
+  strokeColl.find().toArray((err, docs) => {
     callback(err, docs);
   });
 }
 
 function getChats(callback) {
-  if (!state.db) throw new Error('Not connected to DB');
-  var chatColl = state.db.collection('chat');
-  chatColl.find().sort({date: 1}).toArray(function(err, docs) {
+  const chatColl = state.db.collection('chat');
+  chatColl.find().sort({ date: 1 }).toArray((err, docs) => {
     callback(err, docs);
   });
 }
 
 function addStroke(obj) {
-  if (!state.db) throw new Error('Not connected to DB');
-  var strokeColl = state.db.collection('stroke');
-  // console.log('trying to insert', obj);
-  strokeColl.insertOne(obj, function(err) {
+  const strokeColl = state.db.collection('stroke');
+  strokeColl.insertOne(obj, (err) => {
     if (err) throw err;
   });
 }
 
 function addChat(obj) {
-  if (!state.db) throw new Error('Not connected to DB');
-  var chatColl = state.db.collection('chat');
-  chatColl.insertOne(obj, function(err) {
+  const chatColl = state.db.collection('chat');
+  chatColl.insertOne(obj, (err) => {
     if (err) throw err;
   });
 }
 
 function clearStrokes() {
-  if (!state.db) throw new Error('Not connected to DB');
-  var strokeColl = state.db.collection('stroke');
+  const strokeColl = state.db.collection('stroke');
   strokeColl.deleteMany({});
 }
 
-function close(callback) {
-  if (state.db) {
-    state.db.close(function(err, result) {
-      state.db = null;
-      callback(err);
-    });
-  }
+async function close(callback) {
+  await state.client.close();
 }
 
 module.exports = {
